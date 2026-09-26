@@ -1,0 +1,365 @@
+/* Approved TCCC presentation layout, 22 September 2026.
+   Scoped overrides retain existing workflows, feedback and print styles. */
+.layout-approved {
+    --layout-muted: #767676;
+    --layout-cell: #f2f2f2;
+    --layout-border: #c8c8c8;
+    background: #fff;
+    color: #161616;
+    font-family: Arial, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.layout-approved .site-header {
+    padding: 10px 24px 0;
+    background: #fff;
+    border-bottom: 1px solid #eeeeee;
+    box-shadow: none;
+}
+.layout-approved .header-masthead {
+    min-height: 82px;
+    align-items: center;
+    gap: 24px;
+}
+.layout-approved .sidebar-logo,
+.layout-approved .sidebar-brand .sidebar-logo img {
+    width: 172px;
+    height: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    filter: none;
+    background: transparent;
+}
+.layout-approved .header-tools { align-items: center; gap: 20px; }
+.layout-approved .global-search input {
+    width: min(245px, 22vw);
+    height: 34px;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid #cecece;
+    border-radius: 5px;
+    background: #f7f7f7;
+    font-size: 13px;
+    font-weight: 400;
+}
+.layout-approved .user-name { color: #111; font-size: 16px; font-weight: 700; }
+.layout-approved .sign-out { color: #727272; font-size: 12px; text-transform: uppercase; }
+.layout-approved .notification-link {
+    min-height: 32px;
+    padding: 5px 8px;
+    color: #565656;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 12px;
+}
+.layout-approved .notification-link:hover,
+.layout-approved .notification-link.is-active { color: #111; background: #f6f6f6; }
+.notification-icon { display: none; }
+.layout-approved .navigation {
+    min-height: 70px;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: clamp(15px, 1.6vw, 28px);
+    padding: 0 0 8px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+.layout-approved .nav-link,
+.layout-approved .nav-link:hover,
+.layout-approved .nav-link.active {
+    min-height: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex: 0 0 auto;
+    gap: 3px;
+    padding: 7px 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--layout-muted);
+    letter-spacing: 0;
+    transform: none;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+.layout-approved .nav-title { font-size: clamp(15px, 1.32vw, 22px); font-weight: 700; line-height: 1.2; }
+.layout-approved .nav-description { font-size: clamp(10px, .86vw, 13px); font-weight: 600; line-height: 1.35; }
+.layout-approved .nav-link::after {
+    top: 0;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    height: 2px;
+    background: var(--orange);
+    box-shadow: none;
+    transform-origin: left;
+}
+.layout-approved .nav-link.active,
+.layout-approved .nav-link:hover { color: #101010; }
+.layout-approved .nav-link:hover::after { transform: scaleX(.5); }
+.layout-approved .nav-link.active::after { transform: scaleX(1); }
+.layout-approved .nav-link:focus-visible {
+    color: #111;
+    outline: 2px solid var(--orange-dark);
+    outline-offset: 3px;
+}
+.layout-approved .workspace-content {
+    width: min(1760px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 16px 0 30px;
+}
+.layout-approved .public-header img { width: 180px; height: auto; filter: none; }
+.layout-approved .button-primary,
+.layout-approved .button-secondary { min-height: 34px; border-radius: 5px; font-weight: 600; }
+
+/* Dashboard: filters, the three paired counters, and chart share one row. */
+.layout-approved .dashboard-page { gap: 18px; }
+.dashboard-overview {
+    display: grid;
+    grid-template-columns: minmax(192px, .76fr) minmax(450px, 1.8fr) minmax(340px, 1.5fr);
+    align-items: center;
+    gap: 16px;
+}
+.layout-approved .dashboard-filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 6px;
+}
+.layout-approved .dashboard-filters > label {
+    display: grid;
+    grid-template-columns: 67px minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+}
+.layout-approved .dashboard-filters > label > span { font-size: 11px; font-weight: 700; text-align: right; }
+.layout-approved .dashboard-filters input,
+.layout-approved .dashboard-filters select {
+    width: 100%;
+    min-width: 0;
+    height: 32px;
+    min-height: 32px;
+    padding: 5px 7px;
+    color: #202020;
+    background: var(--layout-cell);
+    border: 1px solid #b4b4b4;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 400;
+}
+.layout-approved .dashboard-filters .dashboard-all-history {
+    min-height: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+.layout-approved .dashboard-filters .dashboard-all-history > span { font-weight: 400; text-transform: none; }
+.layout-approved .dashboard-filters .dashboard-all-history input { width: 14px; height: 14px; }
+.layout-approved .dashboard-apply {
+    min-height: 29px;
+    justify-self: end;
+    padding: 4px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+.layout-approved .dashboard-summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 9px; }
+.layout-approved .summary-counter-card {
+    min-width: 0;
+    min-height: 206px;
+    padding: 12px 9px;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid #999;
+    border-radius: 14px;
+}
+.layout-approved .summary-counter-block { gap: 5px; }
+.layout-approved .summary-counter-block h2 { color: #111; font-size: clamp(18px, 1.52vw, 26px); line-height: 1.05; }
+.layout-approved .summary-odometer { max-width: 100%; border-radius: 0; }
+.layout-approved .summary-odometer span {
+    min-width: 0;
+    width: clamp(23px, 2.05vw, 34px);
+    min-height: 39px;
+    font-family: Arial, sans-serif;
+    font-size: clamp(25px, 2.2vw, 34px);
+    font-weight: 700;
+    text-shadow: none;
+    box-shadow: none;
+}
+.layout-approved .summary-odometer.compact span { width: clamp(19px, 1.6vw, 26px); min-width: 0; min-height: 27px; font-size: 21px; }
+.layout-approved .counter-breakdown-row { gap: 6px; }
+.layout-approved .counter-breakdown-row > span { min-width: 25px; font-size: 15px; }
+.layout-approved .dashboard-chart-card { min-width: 0; grid-column: auto; padding: 0; overflow: visible; }
+.layout-approved .chart-legend { flex-wrap: wrap; gap: 7px 13px; font-size: 11px; }
+.layout-approved .chart-legend i { width: 14px; }
+.layout-approved .legend-enrolled::after { left: 4px; }
+.layout-approved .dashboard-chart { width: 100%; min-width: 0; margin-top: 2px; }
+
+/* Course cards keep the source's vertical rails and useful content density. */
+.job-card-filters {
+    display: grid;
+    grid-template-columns: minmax(110px, .8fr) minmax(150px, 1.3fr) repeat(2, minmax(120px, .8fr)) minmax(140px, 1fr) minmax(120px, .8fr) auto auto;
+    align-items: end;
+    gap: 8px;
+    margin: 0 0 13px;
+}
+.job-card-filters > label { min-width: 0; display: grid; gap: 4px; }
+.job-card-filters > label > span { color: #717171; font-size: 11px; text-transform: uppercase; }
+.job-card-filters input,
+.job-card-filters select {
+    width: 100%;
+    height: 34px;
+    min-width: 0;
+    padding: 5px 7px;
+    border: 1px solid #b8b8b8;
+    border-radius: 5px;
+    background: var(--layout-cell);
+    color: #202020;
+    font-size: 12px;
+}
+.job-filter-actions { display: flex; align-items: center; gap: 5px; }
+.job-filter-actions .button-primary,
+.job-filter-actions .button-secondary { padding: 6px 8px; font-size: 12px; }
+.create-job-card { white-space: nowrap; font-size: 12px !important; }
+.job-card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 12px 16px; }
+.job-card {
+    --job-color: #7d7d7d;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    align-items: stretch;
+    border: 2px solid var(--job-color);
+    border-radius: 12px;
+    background: #fff;
+}
+.job-status-confirmed,
+.job-status-registration_open,
+.job-status-registration_closed { --job-color: #9b299e; }
+.job-status-in_progress { --job-color: #ed702a; }
+.job-status-completed { --job-color: #26722f; }
+.job-status-cancelled { --job-color: #9b3434; }
+.job-card-open,
+.job-card-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 150px;
+    padding: 8px 2px;
+    color: #fff;
+    background: var(--job-color);
+    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+}
+.job-card-open { border-radius: 9px 0 0 9px; text-decoration: none; }
+.job-card-status { border-radius: 0 9px 9px 0; }
+.job-card-open > span,
+.job-card-status > span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+.job-card-open:hover { color: #fff; filter: brightness(.92); }
+.job-card-open:focus-visible { outline: 3px solid #111; outline-offset: 3px; }
+.job-card-fields { min-width: 0; display: grid; align-content: center; gap: 4px; margin: 0; padding: 8px 9px; }
+.job-card-field { min-width: 0; display: grid; grid-template-columns: 78px minmax(0, 1fr); align-items: center; gap: 5px; }
+.job-card-field dt { color: #444; font-size: 11px; font-weight: 400; text-align: right; white-space: nowrap; }
+.job-card-field dd {
+    min-width: 0;
+    min-height: 24px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #bbb transparent;
+}
+.job-value,
+.job-metrics > span {
+    display: inline-block;
+    flex: 0 0 auto;
+    padding: 2px 5px;
+    color: #545454;
+    background: #fafafa;
+    border: 1px solid #c6c6c6;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+.job-course-name { color: #393939; font-weight: 600; }
+.job-card-field .job-location { overflow: visible; }
+.job-location .job-value { max-width: 100%; flex-shrink: 1; white-space: normal; overflow-wrap: normal; word-break: normal; }
+.job-card-field .job-instructors,
+.job-card-field .job-metrics { flex-wrap: wrap; }
+.job-metrics > span { font-size: 11px; padding-right: 4px; padding-left: 4px; }
+.job-metrics strong { color: #303030; font-weight: 600; }
+.job-card-grid > .empty-panel { grid-column: 1 / -1; }
+
+@media (min-width: 1550px) {
+    .layout-approved .header-masthead { min-height: 92px; }
+    .layout-approved .sidebar-logo,
+    .layout-approved .sidebar-brand .sidebar-logo img { width: 182px; }
+    .dashboard-overview { grid-template-columns: minmax(210px, .7fr) minmax(510px, 1.8fr) minmax(480px, 2fr); }
+    .job-card-field { grid-template-columns: 87px minmax(0, 1fr); }
+    .job-card-field dt { font-size: 12px; }
+    .job-value { font-size: 14px; }
+    .job-metrics > span { font-size: 12px; }
+}
+@media (max-width: 1180px) {
+    .dashboard-overview { grid-template-columns: minmax(200px, .7fr) minmax(450px, 1.8fr); }
+    .layout-approved .dashboard-chart-card { grid-column: 1 / -1; max-width: 800px; width: 100%; justify-self: center; }
+    .job-card-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .job-card-grid { grid-template-columns: 1fr; }
+    .job-card-fields { gap: 3px; }
+}
+@media (max-width: 720px) {
+    .layout-approved .site-header { padding: 7px 12px 0; }
+    .layout-approved .header-masthead { min-height: 66px; gap: 10px; }
+    .layout-approved .sidebar-logo,
+    .layout-approved .sidebar-brand .sidebar-logo img { width: 142px; }
+    .layout-approved .header-tools { gap: 9px; }
+    .layout-approved .notification-icon { display: block; }
+    .layout-approved .notification-title { display: none; }
+    .layout-approved .account-block { min-width: 0; max-width: 135px; }
+    .layout-approved .user-name { font-size: 13px; }
+    .layout-approved .navigation { min-height: 63px; gap: 20px; }
+    .layout-approved .nav-link { min-height: 56px; }
+    .layout-approved .nav-title { font-size: 15px; }
+    .layout-approved .nav-description { font-size: 10px; }
+    .layout-approved .workspace-content { width: calc(100% - 24px); padding-top: 12px; }
+    .dashboard-overview { grid-template-columns: 1fr; }
+    .layout-approved .dashboard-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .layout-approved .dashboard-filters > label { grid-template-columns: 1fr; gap: 3px; }
+    .layout-approved .dashboard-filters > label > span { text-align: left; }
+    .layout-approved .dashboard-filters .dashboard-all-history { align-self: end; justify-content: flex-start; }
+    .layout-approved .dashboard-apply { justify-self: stretch; }
+    .layout-approved .summary-counter-card { min-height: 165px; padding: 10px 4px; gap: 10px; }
+    .layout-approved .summary-counter-block h2 { font-size: 16px; }
+    .layout-approved .summary-odometer span { width: 20px; min-height: 30px; font-size: 23px; }
+    .layout-approved .summary-odometer.compact span { width: 14px; min-height: 22px; font-size: 17px; }
+    .layout-approved .counter-breakdown-row { gap: 3px; }
+    .layout-approved .counter-breakdown-row > span { min-width: 23px; font-size: 12px; }
+    .job-card-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .job-card { grid-template-columns: 27px minmax(0, 1fr) 27px; }
+    .job-card-open,
+    .job-card-status { font-size: 13px; }
+    .job-card-field { grid-template-columns: 68px minmax(0, 1fr); gap: 4px; }
+    .job-card-fields { padding: 8px 6px; }
+    .job-card-field dt { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .layout-approved .nav-link,
+    .layout-approved .nav-link::after { transition: none; }
+}
