@@ -1,6 +1,6 @@
 # IQARUS Training Management System — latest source
 
-This package contains the complete Django application after the accepted September 2026 layout/correction work and the 26 September clean-start/history-import update.
+This package contains the complete Django application after the 
 
 ## Included
 
