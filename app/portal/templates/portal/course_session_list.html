@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Course Directory | IQARUS TMS{% endblock %}
+{% block content %}
+<section class="directory-page course-directory-page">
+  <form method="get" id="course-directory-filters"></form>
+  <header class="page-intro"><div><h2>Master Course Directory</h2><p>One searchable list of every course session, assignment and registration status.</p></div><div class="directory-heading-actions"><button form="course-directory-filters" class="button-primary" type="submit">Apply filters</button><a class="button-secondary" href="{% url 'courses_sessions' %}">Clear filters</a><span class="result-total">Matches found: <strong>{{ filtered_count }}</strong></span></div></header>
+  <div class="directory-table-shell"><table class="compact-directory-table course-directory-table aligned-filter-table" style="--directory-row-height:{{ row_height }}px">
+    <thead><tr><th scope="col">#</th>
+      <th scope="col"><label>Course<select form="course-directory-filters" name="course"><option value="">All courses</option>{% for course in courses %}<option value="{{ course.pk }}" {% if current.course == course.pk|stringformat:'s' %}selected{% endif %}>{{ course }}</option>{% endfor %}</select></label></th>
+      <th scope="col"><label>Date from<input form="course-directory-filters" type="date" name="date_from" value="{{ current.date_from }}"></label></th>
+      <th scope="col"><label>Date to<input form="course-directory-filters" type="date" name="date_to" value="{{ current.date_to }}"></label></th>
+      <th scope="col"><label>Location<select form="course-directory-filters" name="camp"><option value="">All locations</option>{% for camp in camps %}<option value="{{ camp.pk }}" {% if current.camp == camp.pk|stringformat:'s' %}selected{% endif %}>{{ camp }}</option>{% endfor %}</select></label></th>
+      <th scope="col"><label>Instructor(s)<select form="course-directory-filters" name="instructor"><option value="">All instructors</option>{% for instructor in instructors %}<option value="{{ instructor.pk }}" {% if current.instructor == instructor.pk|stringformat:'s' %}selected{% endif %}>{{ instructor }}</option>{% endfor %}</select></label></th>
+      <th scope="col"><label>Reg<select form="course-directory-filters" name="registration"><option value="">All</option><option value="open" {% if current.registration == 'open' %}selected{% endif %}>Open</option><option value="closed" {% if current.registration == 'closed' %}selected{% endif %}>Closed</option></select></label></th>
+      {% for item in numeric_filters %}{% if item.key != 'hp' and item.key != 'ttt' %}<th scope="col" class="number-filter"><label>{{ item.label }}<input form="course-directory-filters" type="number" name="{{ item.key }}" min="0" step="1" placeholder="Any" value="{{ item.value }}"></label></th>{% endif %}{% endfor %}
+      <th scope="col"><label>Status<select form="course-directory-filters" name="status"><option value="">All</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if current.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label></th><th scope="col">View</th>
+    </tr></thead><tbody>{% for row in rows %}<tr class="course-directory-row">
+      <td class="number-cell">{{ row.row_number }}</td><td>{{ row.course }}</td>
+      <td class="course-directory-date-cell">{{ row.start_date|date:'d/m/y'|default:'—' }}</td><td class="course-directory-date-cell">{{ row.end_date|date:'d/m/y'|default:'—' }}</td>
+      <td>{{ row.camp }}</td><td><div class="directory-instructor-list">{% for instructor in row.instructors %}<span class="directory-instructor">{{ instructor }}</span>{% empty %}<span>Not assigned</span>{% endfor %}</div></td>
+      <td class="status-cell"><span class="directory-badge {% if row.registration_published %}outcome-pass{% else %}outcome-fail{% endif %}">{% if row.registration_published %}Open{% else %}Closed{% endif %}</span></td>
+      <td class="number-cell">{{ row.enrolled }}</td><td class="number-cell">{{ row.passed }}</td><td class="number-cell">{{ row.failed }}</td><td class="number-cell">{{ row.rejected }}</td>
+      <td class="status-cell"><span class="directory-badge lifecycle-{{ row.status_key }}">{{ row.status }}</span></td><td><a class="table-action" href="{% url 'instructor_course_workspace' row.public_id %}">View</a></td>
+    </tr>{% empty %}<tr><td colspan="13" class="empty-table">No courses match these filters.</td></tr>{% endfor %}</tbody>
+  </table></div>
+  <details class="additional-filters" {% if current.q %}open{% endif %}><summary>Additional filters: search, HP and TTT</summary><div class="compact-directory-filters"><label>Search<input form="course-directory-filters" name="q" value="{{ current.q }}" placeholder="Course, camp or reference"></label>{% for item in numeric_filters %}{% if item.key == 'hp' or item.key == 'ttt' %}<label>{{ item.label }}<input form="course-directory-filters" name="{{ item.key }}" type="number" min="0" value="{{ item.value }}" placeholder="Any"></label>{% endif %}{% endfor %}<button type="submit" form="course-directory-filters" class="button-primary">Apply filters</button></div></details>
+  {% if page_obj.paginator.num_pages > 1 %}<nav class="pagination" aria-label="Course directory pages"><span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ filtered_count }}</span><div>{% if page_obj.has_previous %}<a href="?{{ query_without_page }}&amp;page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}<strong>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</strong>{% if page_obj.has_next %}<a href="?{{ query_without_page }}&amp;page={{ page_obj.next_page_number }}">Next</a>{% endif %}</div></nav>{% endif %}
+</section>
+{% endblock %}

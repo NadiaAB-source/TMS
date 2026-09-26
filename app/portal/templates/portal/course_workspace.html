@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ session.display_course_name }} | IQARUS TMS{% endblock %}
+{% block page_heading %}Course{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'portal/css/course_workspace_restored.css' %}">
+<section class="page course-workspace-page">
+  <a class="back" href="{% url 'my_courses' %}">← My Courses</a>
+
+  <section class="course-overview">
+    <p class="course-date-line">{{ session.start_date|date:"D d M Y" }} – {{ session.end_date|date:"D d M Y" }}</p>
+    <h2>{{ session.display_course_name }}</h2>
+    <p class="course-camp-line">{{ session.camp }}</p>
+    <div class="course-identity-tags"><span>{{ session.service_branch_name }}</span><span>{{ session.display_reference }}</span></div>
+
+    <div class="course-info-layout">
+      <div class="course-contact-cluster">
+        <div class="course-contact-row">
+          <article class="course-info-card"><small>Camp point of contact</small><strong>{{ session.poc_name|default:"—" }}</strong></article>
+          <article class="course-info-card"><small>Contact number</small><strong>{{ session.poc_contact_number|default:"—" }}</strong></article>
+        </div>
+        <div class="course-mini-metrics">
+          <article class="course-info-card location"><small>Location</small>{% if session.poc_location_url %}<a href="{{ session.poc_location_url }}" target="_blank" rel="noopener">Open location link</a>{% else %}<strong>Not provided</strong>{% endif %}</article>
+          <article class="course-info-card"><small>Capacity</small><strong>{{ session.capacity|default_if_none:"—" }}</strong></article>
+          <article class="course-info-card"><small>Enrolled</small><strong>{{ selected_count }}</strong></article>
+          <article class="course-info-card"><small>Pass</small><strong>{{ passed_count }}</strong></article>
+          <article class="course-info-card"><small>Fail</small><strong>{{ failed_count }}</strong></article>
+          <article class="course-info-card"><small>Reject</small><strong>{{ rejected_count }}</strong></article>
+        </div>
+      </div>
+      <article class="course-info-card course-instructor-card"><small>Instructor team</small><div class="instructor-status-list">{% for assignment in assignments %}<strong>{{ assignment.instructor.name_english }}</strong>{% empty %}<strong>Not assigned</strong>{% endfor %}</div></article>
+      <article class="course-email-card"><div class="course-info-card"><small>Allocation email sent</small><strong>{% if session.course_information_sent_at %}{{ session.course_information_sent_at|date:"D d M Y H:i" }}{% else %}Not sent{% endif %}</strong></div>{% if not course_read_only %}<form method="post" action="{% url 'resend_course_information' session.public_id %}">{% csrf_token %}<button class="plain-button" type="submit">Send email invite</button></form>{% endif %}</article>
+    </div>
+  </section>
+
+  {% if course_read_only %}<div class="read-only-banner">{% if session.status == 'cancelled' %}This course is cancelled. Registration is closed.{% else %}You have view access to this course.{% endif %} Existing records remain available.</div>{% endif %}
+
+  <div class="course-utility-actions"><span class="directory-badge lifecycle-{{ lifecycle_status }}">{{ lifecycle_label }}</span><a class="utility-link" href="{% url 'registration_qr' session.public_id %}">Course QR code / registration</a>
+    {% if can_edit_course %}<a class="utility-link" href="{% url 'course_edit' session.public_id %}">Edit Course</a>{% endif %}
+    {% if latest_roster %}<a class="utility-link" href="{% url 'saved_roster_download' latest_roster.public_id %}">Download Day 1 List v{{ latest_roster.version }}</a>{% endif %}
+    <a class="utility-link" href="{% url 'stamped_lists' session.public_id %}">Upload Stamped List</a>
+  </div>
+
+  <section class="section students-section">
+    <header class="section-heading"><h3>Students</h3><p>S1 / S2: session attendance · HP: High Performance · TTT: future instructor selection. One assigned instructor can complete each shared course task.</p></header>
+
+    <div class="course-stage-flow" aria-label="Course workflow stages">
+      <a class="course-stage {% if session.registration_published %}course-stage-complete{% else %}course-stage-waiting{% endif %}" href="{% url 'registration_qr' session.public_id %}"><span>Registration</span><small>{% if session.registration_published %}Open{% else %}Closed{% endif %}</small></a>
+      <button class="course-stage {% if roster_saved or latest_roster %}course-stage-complete{% else %}course-stage-waiting{% endif %}" type="submit" form="roster-form" formaction="{% url 'course_roster_save' session.public_id %}" {% if course_read_only %}disabled{% endif %}><span>Save changes</span><small>{% if roster_saved or latest_roster %}Saved{% else %}Pending{% endif %}</small></button>
+      <button class="course-stage {% if latest_roster %}course-stage-complete{% else %}course-stage-waiting{% endif %}" type="submit" form="roster-form" formaction="{% url 'course_roster_save_download' session.public_id %}" {% if course_read_only %}disabled{% endif %}><span>Day 1 · Generate stamped list</span><small>{% if latest_roster %}Generated{% else %}Pending{% endif %}</small></button>
+      <a class="course-stage {% if current_stamped_list %}course-stage-complete{% else %}course-stage-waiting{% endif %}" href="{% url 'stamped_lists' session.public_id %}"><span>Day 2 · Upload stamped list</span><small>{% if current_stamped_list %}Uploaded{% else %}Pending{% endif %}</small></a>
+      {% if passed_count and not course_read_only %}<a class="course-stage {% if session.external_upload_generated_at %}course-stage-complete{% else %}course-stage-waiting{% endif %}" href="{% url 'external_upload_xlsx' session.public_id %}"><span>Day 2 · Generate Front-End</span><small>{% if session.external_upload_generated_at %}Generated{% else %}Pending{% endif %}</small></a>{% else %}<span class="course-stage course-stage-waiting" aria-disabled="true"><span>Day 2 · Generate Front-End</span><small>{% if session.external_upload_generated_at %}Generated{% else %}Pending{% endif %}</small></span>{% endif %}
+      {% if session.external_upload_confirmed_at %}<span class="course-stage course-stage-complete"><span>Day 2 · Front-End uploaded</span><small>Completed</small></span>{% elif session.external_upload_generated_at and not course_read_only %}<form class="course-stage-form" method="post" action="{% url 'external_upload_complete' session.public_id %}">{% csrf_token %}<button class="course-stage course-stage-waiting" type="submit"><span>Day 2 · Confirm Front-End upload</span><small>Pending</small></button></form>{% else %}<span class="course-stage course-stage-waiting" aria-disabled="true"><span>Day 2 · Front-End upload</span><small>Pending</small></span>{% endif %}
+    </div>
+
+    <div class="student-summary"><span>{{ registration_count }} registered</span><span>{{ selected_count }} enrolled</span><span>{{ passed_count }} passed</span><span>{{ failed_count }} failed</span><span class="review-summary">{{ warning_count }} need review</span>{% if not course_read_only %}<button class="utility-link" id="clear-results" type="button">Clear selected results</button>{% endif %}</div>
+
+    {% if current_stamped_list %}<p class="roster-help">Stamped list uploaded by {{ current_stamped_list.uploaded_by.get_full_name|default:current_stamped_list.uploaded_by.username }} · {{ current_stamped_list.uploaded_at|date:"d M Y H:i" }}.</p>{% endif %}
+    <p class="roster-help">Correct student details, record attendance, and reject unauthorised registrations. Duplicate and repeat-training warnings require review before enrolment.</p>
+    <form method="post" id="roster-form">{% csrf_token %}<input type="hidden" name="attendance_fields" value="yes"><fieldset class="plain-fieldset" {% if course_read_only %}disabled{% endif %}>
+      <div class="table-wrap"><table class="roster">
+        <colgroup><col style="width:32px"><col style="width:3%"><col style="width:13%"><col style="width:12%"><col style="width:16%"><col style="width:16%"><col style="width:3%"><col style="width:3%"><col style="width:3%"><col style="width:3%"><col style="width:3%"><col style="width:3%"><col style="width:4%"><col style="width:14%"></colgroup>
+        <thead><tr>
+          <th class="center"><label class="column-control">Select<input class="check" id="select-all" type="checkbox"><span>All</span></label></th>
+          <th>SN</th><th>Email Address</th><th>Emirates ID</th><th>Name in English</th><th>Name in Arabic</th>
+          <th class="center" title="Session 1 attendance">S1</th><th class="center" title="Session 2 attendance">S2</th>
+          <th class="center"><label class="column-control">HP<input class="check" id="hp-all" type="checkbox"><span>All</span></label></th>
+          <th class="center"><label class="column-control">TTT<input class="check" id="ttt-all" type="checkbox"><span>All</span></label></th>
+          <th class="center"><label class="column-control">Pass<input class="check" id="pass-all" type="checkbox"><span>All selected</span></label></th>
+          <th class="center"><label class="column-control">Fail<input class="check" id="fail-all" type="checkbox"><span>All selected</span></label></th>
+          <th class="center">Reject</th><th>Remarks</th>
+        </tr></thead>
+        <tbody>
+        {% for row in rows %}{% with r=row.registration %}<tr class="student-row review-{{ row.review_state }}">
+          <td class="center"><input class="check student-select" type="checkbox" name="selected_{{ r.public_id }}" value="yes" data-review-blocked="{% if row.review_state == 'required' or row.review_state == 'excluded' %}true{% else %}false{% endif %}" {% if r.selected_for_roster %}checked{% endif %}></td>
+          <td>{{ row.serial }}</td>
+          <td><input class="roster-input" type="email" name="email_{{ r.public_id }}" value="{{ r.email_raw }}" maxlength="255" required aria-label="Email address for {{ r.submitted_name_english }}"></td>
+          <td><input class="roster-input" name="eid_{{ r.public_id }}" value="{{ row.eid_display }}" inputmode="numeric" maxlength="19" required aria-label="Emirates ID for {{ r.submitted_name_english }}"></td>
+          <td><input class="roster-input" name="name_english_{{ r.public_id }}" value="{{ r.submitted_name_english }}" maxlength="255" required aria-label="English name for {{ r.submitted_name_english }}"></td>
+          <td><input class="roster-input" dir="rtl" name="name_arabic_{{ r.public_id }}" value="{{ r.submitted_name_arabic }}" maxlength="255" required aria-label="Arabic name for {{ r.submitted_name_english }}"></td>
+          <td class="center"><input class="check" type="checkbox" name="s1_{{ r.public_id }}" value="yes" {% if r.day1_attended %}checked{% endif %} aria-label="Session 1 attended by {{ r.submitted_name_english }}"></td>
+          <td class="center"><input class="check" type="checkbox" name="s2_{{ r.public_id }}" value="yes" {% if r.day2_attended %}checked{% endif %} aria-label="Session 2 attended by {{ r.submitted_name_english }}"></td>
+          <td class="center"><input class="check hp-check" type="checkbox" name="hp_{{ r.public_id }}" value="yes" {% if r.is_hp %}checked{% endif %}></td>
+          <td class="center"><input class="check ttt-check" type="checkbox" name="ttt_{{ r.public_id }}" value="yes" {% if r.is_ttt %}checked{% endif %}></td>
+          <td class="center"><input class="result-radio pass-radio" aria-label="Pass" type="radio" name="result_{{ r.public_id }}" value="passed" {% if r.assessment_status == 'passed' %}checked{% endif %}></td>
+          <td class="center"><input class="result-radio fail-radio" aria-label="Fail" type="radio" name="result_{{ r.public_id }}" value="failed" {% if r.assessment_status == 'failed' %}checked{% endif %}><input class="pending-radio" type="radio" name="result_{{ r.public_id }}" value="pending" {% if r.assessment_status != 'passed' and r.assessment_status != 'failed' %}checked{% endif %} hidden></td>
+          <td class="center"><input class="check reject-check" type="checkbox" name="rejected_{{ r.public_id }}" value="yes" {% if r.status == 'rejected' %}checked{% endif %} aria-label="Reject registration for {{ r.submitted_name_english }}"></td>
+          <td><textarea class="remarks" rows="1" name="remarks_{{ r.public_id }}" aria-label="Remarks for {{ r.submitted_name_english }}">{{ r.instructor_remarks }}</textarea></td>
+        </tr>
+        {% if row.review_state != 'clear' or row.flags %}<tr class="review-detail-row review-{{ row.review_state }}"><td class="review-detail-label" colspan="2">Duplicate review</td><td colspan="12"><span class="review-state {{ row.review_state }}">{{ row.review_label }}</span>{% for flag in row.flags %}<div class="review-flag {{ flag.tone }}"><strong>{{ flag.title }}</strong>{{ flag.detail }}</div>{% endfor %}{% if row.review_required %}<div class="review-actions"><label><input type="radio" name="duplicate_decision_{{ r.public_id }}" value="reviewed_allow" {% if row.review_state == 'allowed' %}checked{% endif %}> Reviewed — allow selection</label><label><input type="radio" name="duplicate_decision_{{ r.public_id }}" value="reviewed_exclude" {% if row.review_state == 'excluded' %}checked{% endif %}> Reviewed — exclude from list</label><input class="review-note" name="duplicate_notes_{{ r.public_id }}" value="{{ r.duplicate_review_notes }}" maxlength="2000" placeholder="Review note (optional)"></div>{% endif %}</td></tr>{% endif %}{% endwith %}{% empty %}<tr><td colspan="14">No QR registrations yet.</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </fieldset></form>
+  </section>
+
+  <section class="section inventory-section">
+    <header class="section-heading"><h3>Material Used</h3><p>Used quantities include consumed, damaged, lost and unreturned items. Saving updates the instructor’s balance.</p></header>
+    <div class="inventory-section-grid">
+    {% for section in inventory_sections %}
+      <article class="inventory-person">
+        <form method="post" action="{% url 'course_inventory_save' session.public_id %}">{% csrf_token %}
+          <input type="hidden" name="instructor_id" value="{{ section.assignment.instructor.id }}">
+          <fieldset class="plain-fieldset" {% if course_read_only or not section.can_edit %}disabled{% endif %}>
+            <header class="inventory-person-header"><h4>{{ section.assignment.instructor.name_english }}</h4>{% if not course_read_only and section.can_edit %}<button class="inventory-save" type="submit">Save instructor use</button>{% endif %}</header>
+            {% if section.rows %}<div class="table-wrap"><table class="equipment"><colgroup><col style="width:32%"><col style="width:8%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:24%"></colgroup><thead><tr><th>Item</th><th>Unit</th><th>Balance Before Course</th><th>Used Up in Course</th><th>Balance After Course</th><th>Notes</th></tr></thead><tbody>
+            {% for row in section.rows %}<tr>
+              <td>{{ row.item.name }}</td><td class="unit-cell">{{ row.item.unit }}</td><td class="balance-cell">{{ row.balance_before }}</td>
+              <td><input class="used-up-input" type="number" min="0" max="{{ row.balance_before }}" name="used_up_{{ row.item.id }}" value="{{ row.used_up }}" data-balance-before="{{ row.balance_before }}" aria-label="{{ row.item.name }} used up in course"></td>
+              <td class="balance-cell balance-after">{{ row.balance_after }}</td><td><input name="inventory_notes_{{ row.item.id }}" value="{{ row.usage.notes|default:'' }}" aria-label="{{ row.item.name }} notes"></td>
+            </tr>{% endfor %}
+            </tbody></table></div>{% else %}<p class="inventory-empty">No equipment or consumables are currently issued to this instructor.</p>{% endif %}
+          </fieldset>
+        </form>
+      </article>
+    {% empty %}<p class="inventory-empty">Your material usage appears here when you are assigned to this course.</p>{% endfor %}
+    </div>
+  </section>
+
+  {% if can_manage_course %}
+  <section class="danger-zone">
+    <h3>Cancel or Delete Course</h3>
+    <p class="danger-summary">Cancel preserves the course and closes registration. Deletion is only for an empty course created by mistake. Both actions are permanently recorded.</p>
+    <div class="danger-actions">
+      {% if session.status != 'cancelled' and session.status != 'completed' %}
+      <form method="post" action="{% url 'course_cancel' session.public_id %}" onsubmit="return confirm('Cancel this course and close registration?');">
+        {% csrf_token %}
+        <label>Cancellation reason (optional)<input name="reason" maxlength="1000" placeholder="Reason"></label>
+        <button class="danger-button secondary" type="submit">Cancel Course</button>
+      </form>
+      {% endif %}
+      {% if can_delete_course %}
+      <form method="post" action="{% url 'course_delete' session.public_id %}" onsubmit="return confirm('Permanently delete this empty course? The deletion will remain in the Activity Log.');">
+        {% csrf_token %}<input type="hidden" name="confirm" value="delete">
+        <label>Deletion reason (optional)<input name="reason" maxlength="1000" placeholder="Created by mistake"></label>
+        <button class="danger-button" type="submit">Delete Empty Course</button>
+      </form>
+      {% else %}
+      <p class="danger-unavailable">Delete unavailable: this course contains {{ delete_blockers|join:", " }}. Cancel it to preserve those records.</p>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+</section>
+<script>
+const all=(selector)=>Array.from(document.querySelectorAll(selector));
+// Size editable names to their actual text; the roster scrolls within its frame.
+const rosterMeasure=document.createElement('canvas').getContext('2d');
+all('.roster-input').forEach(input=>{const fit=()=>{rosterMeasure.font=getComputedStyle(input).font;input.style.width=Math.max(170,Math.ceil(rosterMeasure.measureText(input.value).width)+26)+'px';};input.addEventListener('input',fit);fit();document.fonts.ready.then(fit);});
+document.getElementById('select-all')?.addEventListener('change',e=>all('.student-select').forEach(x=>{if(!e.target.checked||x.dataset.reviewBlocked!=='true'){x.checked=e.target.checked;}}));
+document.getElementById('hp-all')?.addEventListener('change',e=>all('.hp-check').forEach(x=>x.checked=e.target.checked));
+document.getElementById('ttt-all')?.addEventListener('change',e=>all('.ttt-check').forEach(x=>x.checked=e.target.checked));
+function setResult(cls){all('#roster-form tr.student-row').forEach(row=>{if(row.querySelector('.student-select')?.checked){row.querySelector(cls)?.click();}})}
+document.getElementById('pass-all')?.addEventListener('change',e=>{if(e.target.checked){document.getElementById('fail-all').checked=false;setResult('.pass-radio');}});
+document.getElementById('fail-all')?.addEventListener('change',e=>{if(e.target.checked){document.getElementById('pass-all').checked=false;setResult('.fail-radio');}});
+document.getElementById('clear-results')?.addEventListener('click',()=>setResult('.pending-radio'));
+all('.used-up-input').forEach(input=>input.addEventListener('input',()=>{const before=Number(input.dataset.balanceBefore||0);const used=Math.max(0,Number(input.value||0));const row=input.closest('tr');row?.querySelector('.balance-after')?.replaceChildren(document.createTextNode(String(Math.max(0,before-used))));}));
+all('.reject-check').forEach(input=>input.addEventListener('change',()=>{if(input.checked){const row=input.closest('tr');row.querySelector('.student-select').checked=false;row.querySelector('.pending-radio').checked=true;row.querySelectorAll('.hp-check,.ttt-check').forEach(control=>control.checked=false);}}));
+document.getElementById('roster-form')?.addEventListener('input',()=>{const save=document.querySelector('button[form="roster-form"]');if(save){save.classList.remove('course-stage-complete');save.classList.add('course-stage-waiting');save.querySelector('small').textContent='Unsaved changes';}});
+</script>
+{% endblock %}

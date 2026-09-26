@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Data Quality | IQARUS TMS{% endblock %}
+{% block page_heading %}Data Quality{% endblock %}
+{% block content %}
+<style>
+.dq-page{max-width:1500px;margin:auto}.dq-intro{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:14px}.dq-intro h2{margin:0 0 5px}.muted{color:#68717d}.dq-stats,.dq-filters{display:flex;gap:8px;flex-wrap:wrap}.dq-pill,.dq-filter{padding:7px 10px;border:1px solid #dce1e5;border-radius:999px;background:#fff;color:#303740;text-decoration:none;font-weight:750}.dq-filter.active{background:#f37321;border-color:#f37321;color:#fff}.dq-table-wrap{overflow:auto;border:1px solid #dde2e6;border-radius:14px;background:#fff;margin-top:12px}.dq-table{width:100%;min-width:1200px;border-collapse:collapse}.dq-table th,.dq-table td{padding:10px;border-bottom:1px solid #e8ebee;text-align:left;vertical-align:top}.dq-table th{background:#f5f6f7;color:#555f69;font-size:.82rem;text-transform:uppercase}.review-badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:.82rem;font-weight:850}.review-badge.required{background:#ffe8e5;color:#a12820}.review-badge.allowed{background:#e5f5ee;color:#126342}.review-badge.excluded{background:#eef0f2;color:#4e5963}.flag{margin:0 0 6px;padding-left:10px;border-left:3px solid #f3a15e}.flag.danger{border-color:#cf3f32}.flag strong{display:block}.open-course{color:#d9580b;font-weight:800;text-decoration:none}.empty{padding:22px;text-align:center;color:#68717d}@media(max-width:800px){.dq-intro{display:block}.dq-stats{margin-top:10px}}
+</style>
+<section class="dq-page">
+  <div class="dq-intro">
+    <div>
+      <h2>Duplicate Review Workbench</h2>
+      <p class="muted">Oversight for possible duplicate registrations and previous-course history. IQARUS never merges or deletes a student automatically; the assigned instructor reviews the row inside the course.</p>
+    </div>
+    <div class="dq-stats">
+      <span class="dq-pill">{{ state_counts.required }} waiting</span>
+      <span class="dq-pill">{{ state_counts.allowed }} allowed</span>
+      <span class="dq-pill">{{ state_counts.excluded }} excluded</span>
+    </div>
+  </div>
+  <nav class="dq-filters" aria-label="Duplicate review filters">
+    <a class="dq-filter {% if state_filter == 'required' %}active{% endif %}" href="?state=required">Waiting</a>
+    <a class="dq-filter {% if state_filter == 'allowed' %}active{% endif %}" href="?state=allowed">Allowed</a>
+    <a class="dq-filter {% if state_filter == 'excluded' %}active{% endif %}" href="?state=excluded">Excluded</a>
+    <a class="dq-filter {% if state_filter == 'all' %}active{% endif %}" href="?state=all">All flagged · {{ total_flagged }}</a>
+  </nav>
+  <div class="dq-table-wrap">
+    <table class="dq-table">
+      <thead><tr><th>Status</th><th>Course</th><th>Submitted student</th><th>Why it was flagged</th><th>Instructor review</th></tr></thead>
+      <tbody>
+      {% for row in rows %}{% with r=row.registration %}
+        <tr>
+          <td><span class="review-badge {{ row.review_state }}">{{ row.review_label }}</span></td>
+          <td><strong>{{ r.requested_session.course.title_english }}</strong><br><span class="muted">{{ r.requested_session.start_date|date:"d M Y" }} · {{ r.requested_session.camp|default:"No camp" }}</span></td>
+          <td><strong>{{ r.submitted_name_english|upper }}</strong><br><span dir="rtl">{{ r.submitted_name_arabic }}</span><br><span class="muted">{{ row.eid_display }} · {{ r.email_raw }}</span></td>
+          <td>{% for flag in row.flags %}<div class="flag {{ flag.tone }}"><strong>{{ flag.title }}</strong><span>{{ flag.detail }}</span></div>{% endfor %}</td>
+          <td>{% if r.duplicate_reviewed_by %}<div>{{ r.duplicate_reviewed_by.get_full_name|default:r.duplicate_reviewed_by.username }}</div><span class="muted">{{ r.duplicate_reviewed_at|date:"d M Y H:i" }}{% if r.duplicate_review_notes %} · {{ r.duplicate_review_notes }}{% endif %}</span><br>{% endif %}<a class="open-course" href="{% url 'instructor_course_workspace' r.requested_session.public_id %}">Open course review →</a></td>
+        </tr>
+      {% endwith %}{% empty %}<tr><td class="empty" colspan="5">No registrations match this filter.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

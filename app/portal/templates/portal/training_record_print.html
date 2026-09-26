@@ -1,0 +1,124 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IQARUS Training Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #222;
+            margin: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            border-bottom: 3px solid #f37321;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        p {
+            margin: 4px 0 0;
+            color: #666;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f3f4f6;
+        }
+
+        .no-print {
+            margin-bottom: 18px;
+        }
+
+        button {
+            background: #f37321;
+            color: white;
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                margin: 8mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button type="button" onclick="window.print()">Open print preview</button>
+    </div>
+
+    <header>
+        <div>
+            <h1>IQARUS Training Records</h1>
+            <p>{{ rows|length }} record{{ rows|length|pluralize }}</p>
+        </div>
+        <strong>Training Management System</strong>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Emirates ID</th>
+                <th>Course</th>
+                <th>Date</th>
+                <th>Camp</th>
+                <th>Instructor</th>
+                <th>Attendance</th>
+                <th>Result</th>
+                <th>HP</th>
+                <th>TTT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.student|upper }}</td>
+                <td>{{ row.emirates_id }}</td>
+                <td>{{ row.course }}</td>
+                <td>{{ row.date }}</td>
+                <td>{{ row.camp }}</td>
+                <td>{{ row.instructor }}</td>
+                <td>{{ row.status }}</td>
+                <td>{{ row.result }}</td>
+                <td>{{ row.hp }}</td>
+                <td>{{ row.ttt }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10">No records were found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

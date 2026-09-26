@@ -1,0 +1,242 @@
+
+{% extends "base.html" %}
+
+{% block title %}Training Records | IQARUS TMS{% endblock %}
+
+{% block content %}
+<section class="tr-page">
+    <div class="tr-heading">
+        <div>
+            <p class="tr-eyebrow">TRAINING OPERATIONS</p>
+            <h1>Training Records</h1>
+            <p>Search attendance, results, HP and TTT history without changing the original evidence.</p>
+        </div>
+
+        <div class="tr-total-card">
+            <strong>{{ total_records }}</strong>
+            <span>Total records</span>
+        </div>
+    </div>
+
+    <form method="get" class="tr-filter-panel">
+        <div class="tr-search-field">
+            <label for="record-search">Search all record information</label>
+            <input
+                id="record-search"
+                type="search"
+                name="q"
+                value="{{ current.q }}"
+                placeholder="Student name, Emirates ID, course, instructor or camp"
+            >
+        </div>
+
+        <div>
+            <label for="status-filter">Attendance</label>
+            <select id="status-filter" name="status">
+                <option value="">All attendance</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if current.status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="result-filter">Result</label>
+            <select id="result-filter" name="result">
+                <option value="">All results</option>
+                {% for value, label in result_choices %}
+                    <option value="{{ value }}" {% if current.result == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if has_hp %}
+        <div>
+            <label for="hp-filter">HP</label>
+            <select id="hp-filter" name="hp">
+                <option value="">All</option>
+                <option value="yes" {% if current.hp == "yes" %}selected{% endif %}>Yes</option>
+                <option value="no" {% if current.hp == "no" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+        {% endif %}
+
+        {% if has_ttt %}
+        <div>
+            <label for="ttt-filter">TTT</label>
+            <select id="ttt-filter" name="ttt">
+                <option value="">All</option>
+                <option value="yes" {% if current.ttt == "yes" %}selected{% endif %}>Yes</option>
+                <option value="no" {% if current.ttt == "no" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+        {% endif %}
+
+        <div>
+            <label for="per-page">Rows</label>
+            <select id="per-page" name="per_page">
+                <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+
+        <div class="tr-filter-actions">
+            <button type="submit" class="tr-primary-button">Apply filters</button>
+            <a href="{% url 'training_records' %}" class="tr-secondary-button">Clear</a>
+        </div>
+    </form>
+
+    <div class="tr-result-summary">
+        <span><strong>{{ filtered_count }}</strong> matching record{{ filtered_count|pluralize }}</span>
+        <span id="selected-count">0 selected</span>
+    </div>
+
+    <form method="post" action="{% url 'training_records_print' %}" id="record-selection-form">
+        {% csrf_token %}
+
+        {% for key, value in hidden_filters %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+
+        <div class="tr-selection-toolbar">
+            <label>
+                <input type="checkbox" id="select-all-records">
+                Select all shown on this page
+            </label>
+
+            <div>
+                <button type="button" class="tr-link-button" id="clear-selection">
+                    Clear selection
+                </button>
+                <button type="submit" name="scope" value="selected" class="tr-secondary-button">
+                    Print selected
+                </button>
+                <button type="submit" name="scope" value="shown" class="tr-primary-button">
+                    Print all filtered
+                </button>
+            </div>
+        </div>
+
+        <div class="tr-table-card">
+            <table class="tr-table">
+                <thead>
+                    <tr>
+                        <th aria-label="Select"></th>
+                        <th>Student</th>
+                        <th>Emirates ID</th>
+                        <th>Course</th>
+                        <th>Date</th>
+                        <th>Camp</th>
+                        <th>Instructor</th>
+                        <th>Attendance</th>
+                        <th>Result</th>
+                        <th>HP</th>
+                        <th>TTT</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>
+                            <input
+                                type="checkbox"
+                                class="record-checkbox"
+                                name="record_ids"
+                                value="{{ row.id }}"
+                                aria-label="Select {{ row.student|upper }}"
+                            >
+                        </td>
+                        <td><strong>{{ row.student|upper }}</strong></td>
+                        <td>{{ row.emirates_id }}</td>
+                        <td>{{ row.course }}</td>
+                        <td>{{ row.date }}</td>
+                        <td>{{ row.camp }}</td>
+                        <td>{{ row.instructor }}</td>
+                        <td><span class="tr-status">{{ row.status }}</span></td>
+                        <td>{{ row.result }}</td>
+                        <td>{{ row.hp }}</td>
+                        <td>{{ row.ttt }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11">
+                            <div class="tr-empty-state">
+                                <div class="tr-empty-icon">✓</div>
+                                <h2>No approved training records yet</h2>
+                                <p>
+                                    The historical evidence is protected. Training records will appear
+                                    here after their course sessions and data relationships are safely approved.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="tr-pagination" aria-label="Training record pages">
+        {% if page_obj.has_previous %}
+            <a href="?{% if query_without_page %}{{ query_without_page }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                Previous
+            </a>
+        {% endif %}
+
+        <span>
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if query_without_page %}{{ query_without_page }}&{% endif %}page={{ page_obj.next_page_number }}">
+                Next
+            </a>
+        {% endif %}
+    </nav>
+    {% endif %}
+</section>
+
+<script>
+(function () {
+    const selectAll = document.getElementById("select-all-records");
+    const checkboxes = Array.from(document.querySelectorAll(".record-checkbox"));
+    const countText = document.getElementById("selected-count");
+    const clearButton = document.getElementById("clear-selection");
+
+    function updateCount() {
+        const selected = checkboxes.filter(box => box.checked).length;
+        countText.textContent = selected + " selected";
+
+        if (selectAll) {
+            selectAll.checked = checkboxes.length > 0 && selected === checkboxes.length;
+            selectAll.indeterminate = selected > 0 && selected < checkboxes.length;
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener("change", function () {
+            checkboxes.forEach(box => box.checked = selectAll.checked);
+            updateCount();
+        });
+    }
+
+    checkboxes.forEach(box => box.addEventListener("change", updateCount));
+
+    if (clearButton) {
+        clearButton.addEventListener("click", function () {
+            checkboxes.forEach(box => box.checked = false);
+            updateCount();
+        });
+    }
+
+    updateCount();
+})();
+</script>
+{% endblock %}

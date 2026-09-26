@@ -1,0 +1,434 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ session.display_course_name }} | IQARUS TMS{% endblock %}
+{% block page_title %}Courses & Sessions{% endblock %}
+{% block header_title %}Courses & Sessions{% endblock %}
+{% block workspace_title %}Courses & Sessions{% endblock %}
+
+
+{% block content %}
+
+<!-- IQARUS_COURSE_INLINE_STYLE -->
+<style>
+.cs-page {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 38px 42px 60px;
+}
+
+.cs-heading {
+    margin-bottom: 26px;
+}
+
+.cs-heading h1,
+.cs-detail-heading h1 {
+    margin: 5px 0 9px;
+    color: #25282c;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.08;
+}
+
+.cs-heading p,
+.cs-detail-heading p {
+    margin: 0;
+    color: #68717d;
+    font-size: 1rem;
+}
+
+.cs-eyebrow {
+    margin: 0 !important;
+    color: #d9580b !important;
+    font-size: .75rem !important;
+    font-weight: 800;
+    letter-spacing: .14em;
+}
+
+.cs-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 26px 0;
+}
+
+.cs-summary-grid article {
+    min-height: 118px;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(31, 41, 55, .05);
+}
+
+.cs-summary-grid strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #d9580b;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.cs-summary-grid span {
+    color: #68717d;
+    line-height: 1.4;
+}
+
+.cs-review-card {
+    background: #fff8f3 !important;
+    border-color: #ffd8c0 !important;
+}
+
+.cs-filter-panel {
+    display: grid;
+    grid-template-columns: minmax(250px, 2fr) repeat(5, minmax(120px, 1fr));
+    gap: 13px;
+    align-items: end;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(31, 41, 55, .04);
+}
+
+.cs-filter-panel label {
+    display: block;
+    margin-bottom: 7px;
+    color: #4b5563;
+    font-size: .8rem;
+    font-weight: 750;
+}
+
+.cs-filter-panel input,
+.cs-filter-panel select {
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
+    padding: 9px 11px;
+    border: 1px solid #d5dae0;
+    border-radius: 10px;
+    background: #fff;
+    color: #25282c;
+    font: inherit;
+}
+
+.cs-filter-panel input:focus,
+.cs-filter-panel select:focus {
+    border-color: #f37321;
+    outline: 3px solid rgba(243, 115, 33, .13);
+}
+
+.cs-filter-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.cs-primary-button,
+.cs-secondary-button {
+    box-sizing: border-box;
+    display: inline-flex;
+    min-height: 43px;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 15px;
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 750;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cs-primary-button {
+    border: 1px solid #f37321;
+    background: #f37321;
+    color: #fff;
+}
+
+.cs-primary-button:hover {
+    background: #dc5f12;
+}
+
+.cs-secondary-button {
+    border: 1px solid #d5dae0;
+    background: #fff;
+    color: #333;
+}
+
+.cs-result-line {
+    padding: 22px 2px 11px;
+    color: #68717d;
+}
+
+.cs-table-card {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+    box-shadow: 0 12px 34px rgba(31, 41, 55, .05);
+}
+
+.cs-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+}
+
+.cs-table th,
+.cs-table td {
+    padding: 15px 14px;
+    border-bottom: 1px solid #ebedf0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.cs-table th {
+    background: #f7f8fa;
+    color: #59616d;
+    font-size: .76rem;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.cs-table tbody tr:hover {
+    background: #fffaf6;
+}
+
+.cs-table td strong {
+    color: #272b30;
+}
+
+.cs-table td small {
+    display: block;
+    margin-top: 5px;
+    color: #7a828d;
+}
+
+.cs-status,
+.cs-published,
+.cs-unpublished {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: .81rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.cs-status {
+    background: #eef1f4;
+    color: #4b5563;
+}
+
+.cs-published {
+    background: #e8f7ef;
+    color: #157551;
+}
+
+.cs-unpublished {
+    background: #fff0e5;
+    color: #b64f0e;
+}
+
+.cs-open-link,
+.cs-back-link {
+    color: #d9580b;
+    font-weight: 750;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.cs-open-link:hover,
+.cs-back-link:hover {
+    text-decoration: underline;
+}
+
+.cs-empty-state {
+    padding: 50px 20px;
+    text-align: center;
+    color: #68717d;
+}
+
+.cs-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    padding: 24px;
+}
+
+.cs-pagination a {
+    color: #d9580b;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.cs-back-link {
+    display: inline-flex;
+    margin-bottom: 24px;
+}
+
+.cs-detail-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 22px;
+    align-items: flex-start;
+}
+
+.cs-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+}
+
+.cs-detail-grid article,
+.cs-detail-panel {
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(31, 41, 55, .04);
+}
+
+.cs-detail-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: #68717d;
+    font-size: .82rem;
+}
+
+.cs-detail-panel {
+    margin-bottom: 16px;
+}
+
+.cs-detail-panel h2 {
+    margin-top: 0;
+    color: #272b30;
+}
+
+.cs-detail-panel p {
+    color: #68717d;
+    line-height: 1.65;
+}
+
+.cs-person-row,
+.cs-evidence-note {
+    padding: 14px 0;
+    border-top: 1px solid #ebedf0;
+}
+
+.cs-evidence-note span,
+.cs-evidence-note small {
+    display: block;
+    margin-top: 5px;
+    color: #68717d;
+}
+
+@media (max-width: 1150px) {
+    .cs-summary-grid,
+    .cs-detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cs-filter-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cs-search {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .cs-page {
+        padding: 24px 16px 45px;
+    }
+
+    .cs-summary-grid,
+    .cs-detail-grid,
+    .cs-filter-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .cs-search {
+        grid-column: auto;
+    }
+
+    .cs-filter-actions,
+    .cs-detail-heading {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .cs-primary-button,
+    .cs-secondary-button {
+        width: 100%;
+    }
+}
+</style>
+
+<section class="cs-page">
+    <a href="{% url 'courses_sessions' %}" class="cs-back-link">
+        ← Back to Courses & Sessions
+    </a>
+
+    <div class="cs-detail-heading">
+        <div>
+            <p class="cs-eyebrow">COURSE SESSION</p>
+            <h1>{{ session.display_course_name }}</h1>
+            <p>{{ session.start_date|date:"d M Y" }}{% if session.end_date and session.end_date != session.start_date %} – {{ session.end_date|date:"d M Y" }}{% endif %}</p>
+        </div>
+
+        <span class="cs-status">{{ status }}</span>
+    </div>
+
+    <div class="cs-detail-grid">
+        <article>
+            <span>Camp</span>
+            <strong>{{ session.camp|default:"Not assigned" }}</strong>
+        </article>
+
+        <article>
+            <span>Reference code</span>
+            <strong>{{ session.display_reference }}</strong>
+        </article>
+
+        <article>
+            <span>Registration</span>
+            <strong>
+                {% if session.registration_published %}
+                    Published
+                {% else %}
+                    Not published
+                {% endif %}
+            </strong>
+        </article>
+
+        <article>
+            <span>Capacity</span>
+            <strong>{{ session.capacity|default:"Not assigned" }}</strong>
+        </article>
+    </div>
+
+    <div class="cs-detail-panel">
+        <h2>Instructor team</h2>
+
+        {% for instructor in instructors %}
+            <div class="cs-person-row">{{ instructor }}</div>
+        {% empty %}
+            <p>No instructor has been assigned because the historical instructor aliases still require review.</p>
+        {% endfor %}
+    </div>
+
+    <div class="cs-detail-panel">
+        <h2>Source and review notes</h2>
+        <p>{{ session.notes|linebreaksbr }}</p>
+
+        {% for proposal in proposals %}
+            <div class="cs-evidence-note">
+                <strong>Proposal reference</strong>
+                <span>{{ proposal.candidate_id }}</span>
+                <small>Original evidence remains protected and linked.</small>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

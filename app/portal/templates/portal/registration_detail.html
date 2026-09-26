@@ -1,0 +1,479 @@
+
+{% extends "base.html" %}
+
+{% block title %}Registration Details | IQARUS TMS{% endblock %}
+{% block page_title %}Registration Details{% endblock %}
+{% block header_title %}Registration Details{% endblock %}
+{% block workspace_title %}Registration Details{% endblock %}
+
+{% block content %}
+
+<!-- IQARUS_REGISTRATION_WORKSPACE_STYLE -->
+<style>
+.reg-page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 38px 42px 60px;
+}
+
+.reg-heading h1 {
+    margin: 5px 0 9px;
+    color: #25282c;
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.reg-heading p {
+    margin: 0;
+    color: #68717d;
+}
+
+.reg-eyebrow {
+    color: #d9580b !important;
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+}
+
+.reg-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 27px 0;
+}
+
+.reg-summary-grid article {
+    min-height: 116px;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(31, 41, 55, .05);
+}
+
+.reg-summary-grid strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #d9580b;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.reg-summary-grid span {
+    color: #68717d;
+}
+
+.reg-review-card {
+    background: #fff8f3 !important;
+    border-color: #ffd8c0 !important;
+}
+
+.reg-filter-panel {
+    display: grid;
+    grid-template-columns: minmax(270px, 2fr) repeat(5, minmax(125px, 1fr));
+    gap: 13px;
+    align-items: end;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+}
+
+.reg-filter-panel label {
+    display: block;
+    margin-bottom: 7px;
+    color: #4b5563;
+    font-size: .8rem;
+    font-weight: 750;
+}
+
+.reg-filter-panel input,
+.reg-filter-panel select {
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
+    padding: 9px 11px;
+    border: 1px solid #d5dae0;
+    border-radius: 10px;
+    background: #fff;
+    color: #25282c;
+    font: inherit;
+}
+
+.reg-filter-panel input:focus,
+.reg-filter-panel select:focus {
+    border-color: #f37321;
+    outline: 3px solid rgba(243, 115, 33, .13);
+}
+
+.reg-filter-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.reg-primary-button,
+.reg-secondary-button {
+    box-sizing: border-box;
+    display: inline-flex;
+    min-height: 43px;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 15px;
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 750;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.reg-primary-button {
+    border: 1px solid #f37321;
+    background: #f37321;
+    color: #fff;
+}
+
+.reg-secondary-button {
+    border: 1px solid #d5dae0;
+    background: #fff;
+    color: #333;
+}
+
+.reg-result-line {
+    padding: 22px 2px 11px;
+    color: #68717d;
+}
+
+.reg-table-card {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+    box-shadow: 0 12px 34px rgba(31, 41, 55, .05);
+}
+
+.reg-table {
+    width: 100%;
+    min-width: 1150px;
+    border-collapse: collapse;
+}
+
+.reg-table th,
+.reg-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid #ebedf0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.reg-table th {
+    background: #f7f8fa;
+    color: #59616d;
+    font-size: .75rem;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.reg-table tbody tr:hover {
+    background: #fffaf6;
+}
+
+.reg-table td small {
+    display: block;
+    margin-top: 5px;
+    color: #7a828d;
+}
+
+.reg-status,
+.reg-linked,
+.reg-unlinked {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.reg-status {
+    background: #eef1f4;
+    color: #4b5563;
+}
+
+.reg-status-needs_review {
+    background: #fff0e5;
+    color: #b64f0e;
+}
+
+.reg-linked {
+    background: #e8f7ef;
+    color: #157551;
+}
+
+.reg-unlinked {
+    background: #fff0e5;
+    color: #b64f0e;
+}
+
+.reg-open-link,
+.reg-back-link {
+    color: #d9580b;
+    font-weight: 750;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.reg-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    padding: 24px;
+}
+
+.reg-pagination a {
+    color: #d9580b;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.reg-empty-state {
+    padding: 50px;
+    text-align: center;
+    color: #68717d;
+}
+
+.reg-back-link {
+    display: inline-flex;
+    margin-bottom: 24px;
+}
+
+.reg-detail-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.reg-detail-heading h1 {
+    margin: 5px 0 8px;
+    color: #25282c;
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.reg-detail-heading p {
+    margin: 0;
+    color: #68717d;
+}
+
+.reg-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.reg-detail-panel {
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 18px;
+    box-shadow: 0 9px 26px rgba(31, 41, 55, .04);
+}
+
+.reg-detail-panel h2 {
+    margin-top: 0;
+}
+
+.reg-detail-list {
+    display: grid;
+    grid-template-columns: minmax(150px, .7fr) 1.5fr;
+    margin: 0;
+}
+
+.reg-detail-list dt,
+.reg-detail-list dd {
+    margin: 0;
+    padding: 12px 0;
+    border-top: 1px solid #ebedf0;
+    overflow-wrap: anywhere;
+}
+
+.reg-detail-list dt {
+    color: #68717d;
+}
+
+.reg-detail-list dd {
+    color: #25282c;
+    font-weight: 650;
+}
+
+.reg-source-panel {
+    grid-column: 1 / -1;
+}
+
+.reg-raw-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.reg-raw-table th,
+.reg-raw-table td {
+    padding: 11px;
+    border-top: 1px solid #ebedf0;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.reg-raw-table th {
+    width: 35%;
+    color: #68717d;
+}
+
+@media (max-width: 1150px) {
+    .reg-summary-grid,
+    .reg-detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .reg-filter-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .reg-search,
+    .reg-source-panel {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .reg-page {
+        padding: 24px 16px 45px;
+    }
+
+    .reg-summary-grid,
+    .reg-detail-grid,
+    .reg-filter-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .reg-search,
+    .reg-source-panel {
+        grid-column: auto;
+    }
+
+    .reg-filter-actions,
+    .reg-detail-heading {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .reg-detail-list {
+        grid-template-columns: 1fr;
+    }
+
+    .reg-detail-list dt {
+        padding-bottom: 2px;
+    }
+
+    .reg-detail-list dd {
+        padding-top: 2px;
+    }
+}
+</style>
+
+
+<section class="reg-page">
+    <a href="/registrations/" class="reg-back-link">← Back to Registrations</a>
+
+    <div class="reg-detail-heading">
+        <div>
+            <p class="reg-eyebrow">SUBMISSION REVIEW</p>
+            <h1>
+                {{ registration.submitted_name_english|default:registration.submitted_name_arabic|default:"Registration"|upper }}
+            </h1>
+            <p>Original values remain unchanged and traceable to their source row.</p>
+        </div>
+
+        <span class="reg-status reg-status-{{ registration.status }}">
+            {{ status_display }}
+        </span>
+    </div>
+
+    <div class="reg-detail-grid">
+        <article class="reg-detail-panel">
+            <h2>Submitted identity</h2>
+
+            <dl class="reg-detail-list">
+                <dt>English name</dt>
+                <dd>{{ registration.submitted_name_english|default:"Not supplied"|upper }}</dd>
+
+                <dt>Arabic name</dt>
+                <dd dir="rtl">{{ registration.submitted_name_arabic|default:"Not supplied" }}</dd>
+
+                <dt>Emirates ID</dt>
+                <dd>{{ eid_display }}</dd>
+
+                <dt>Email</dt>
+                <dd>{{ registration.email_raw|default:"Not supplied" }}</dd>
+
+                <dt>Phone</dt>
+                <dd>{{ registration.phone_raw|default:"Not supplied" }}</dd>
+            </dl>
+        </article>
+
+        <article class="reg-detail-panel">
+            <h2>System relationship</h2>
+
+            <dl class="reg-detail-list">
+                <dt>Approved student</dt>
+                <dd>{{ registration.student|default:"Not linked"|upper }}</dd>
+
+                <dt>Requested session</dt>
+                <dd>{{ registration.requested_session|default:"Not linked" }}</dd>
+
+                <dt>Requested date</dt>
+                <dd>{{ registration.training_date_raw|default:"Not supplied" }}</dd>
+
+                <dt>Submitted</dt>
+                <dd>{{ registration.submitted_at|date:"d M Y H:i"|default:"Not recorded" }}</dd>
+
+                <dt>Review notes</dt>
+                <dd>{{ registration.review_notes|default:"No review notes" }}</dd>
+            </dl>
+        </article>
+
+        <article class="reg-detail-panel reg-source-panel">
+            <h2>Protected source reference</h2>
+
+            <dl class="reg-detail-list">
+                <dt>Source file</dt>
+                <dd>{{ registration.source_file|default:"Not recorded" }}</dd>
+
+                <dt>Worksheet</dt>
+                <dd>{{ registration.source_sheet|default:"Not recorded" }}</dd>
+
+                <dt>Original row</dt>
+                <dd>{{ registration.source_row|default:"Not recorded" }}</dd>
+            </dl>
+        </article>
+
+        <article class="reg-detail-panel reg-source-panel">
+            <h2>Original submission fields</h2>
+
+            <table class="reg-raw-table">
+                <tbody>
+                    {% for label, value in registration.raw_payload.items %}
+                    <tr>
+                        <th>{{ label }}</th>
+                        <td>{{ value|default:"—" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td>No original payload was recorded.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </article>
+    </div>
+</section>
+{% endblock %}

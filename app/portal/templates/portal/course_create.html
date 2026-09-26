@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% if editing %}Edit Course{% else %}Create Course{% endif %} | IQARUS TMS{% endblock %}
+{% block page_heading %}{% if editing %}Edit Course{% else %}Create Course{% endif %}{% endblock %}
+{% block content %}
+<section class="course-create-page">
+    <header class="course-create-intro">
+        <p>{% if editing %}Correct the course information or assigned instructors. Saving changes resets the course-information delivery status and emails the updated information only to the selected instructors.{% else %}Enter the course details and assign one or more instructors.{% endif %}</p>
+    </header>
+
+    <form class="course-create-form" method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="course-form-nonfield-errors">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <div class="course-create-main">
+            <section class="course-form-section" aria-labelledby="course-details-heading">
+                <h2 id="course-details-heading">Course details</h2>
+
+                <div class="course-field-grid">
+                    <div class="course-field">
+                        <label for="{{ form.course.id_for_label }}">
+                            Course <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.course }}
+                        {{ form.course.errors }}
+                    </div>
+
+                    <div class="course-field">
+                        <label for="{{ form.camp.id_for_label }}">
+                            Camp <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.camp }}
+                        {{ form.camp.errors }}
+                    </div>
+
+                    <div class="course-field">
+                        <label for="{{ form.service_branch.id_for_label }}">
+                            Service Branch <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.service_branch }}
+                        {{ form.service_branch.errors }}
+                    </div>
+
+                    <div
+                        class="course-field"
+                        id="service-branch-other-field"
+                        {% if form.service_branch.value != 'OTHER' %}hidden{% endif %}
+                    >
+                        <label for="{{ form.service_branch_other.id_for_label }}">
+                            Other service branch <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.service_branch_other }}
+                        {{ form.service_branch_other.errors }}
+                    </div>
+
+                    <div class="course-field">
+                        <label for="{{ form.start_date.id_for_label }}">
+                            Start date <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.start_date }}
+                        {{ form.start_date.errors }}
+                    </div>
+
+                    <div class="course-field">
+                        <label for="{{ form.end_date.id_for_label }}">
+                            End date <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.end_date }}
+                        {{ form.end_date.errors }}
+                    </div>
+
+                    <div class="course-field">
+                        <label for="{{ form.capacity.id_for_label }}">
+                            Capacity <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.capacity }}
+                        {{ form.capacity.errors }}
+                    </div>
+
+                    <div class="course-field">
+                        <label for="{{ form.instructor_student_ratio.id_for_label }}">
+                            Students per instructor <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.instructor_student_ratio }}
+                        <p class="course-field-help" id="ratio-help">
+                            Example: enter 10 for a 1:10 instructor-to-student ratio.
+                        </p>
+                        {{ form.instructor_student_ratio.errors }}
+                    </div>
+                </div>
+            </section>
+
+            <section class="course-form-section course-contact-section" aria-labelledby="contact-heading">
+                <h2 id="contact-heading">Point of Contact</h2>
+
+                <div class="course-field">
+                    <label for="{{ form.poc_name.id_for_label }}">
+                        Point of Contact name <span class="required-mark" aria-hidden="true">*</span>
+                    </label>
+                    {{ form.poc_name }}
+                    {{ form.poc_name.errors }}
+                </div>
+
+                <div class="course-field">
+                    <label for="{{ form.poc_contact_number.id_for_label }}">
+                        Point of Contact number <span class="required-mark" aria-hidden="true">*</span>
+                    </label>
+                    {{ form.poc_contact_number }}
+                    {{ form.poc_contact_number.errors }}
+                </div>
+
+                <div class="course-field">
+                    <label for="{{ form.poc_location_url.id_for_label }}">
+                        Location link <span class="required-mark" aria-hidden="true">*</span>
+                    </label>
+                    {{ form.poc_location_url }}
+                    <p class="course-field-help" id="location-help">
+                        Paste the map or location link.
+                    </p>
+                    {{ form.poc_location_url.errors }}
+                </div>
+            </section>
+        </div>
+
+        <aside class="instructor-assignment-panel" aria-labelledby="instructors-heading">
+            <div class="instructor-panel-heading">
+                <div>
+                    <h2 id="instructors-heading">Assigned instructors</h2>
+                    <p id="instructors-help">
+                        Only selected instructors receive the email and see the course.
+                    </p>
+                </div>
+                <p class="selected-instructor-count">
+                    Selected: <strong id="selected-instructor-count" aria-live="polite">0</strong>
+                </p>
+            </div>
+
+            <label class="instructor-search-label" for="instructor-search">
+                Search instructors
+            </label>
+            <input
+                class="instructor-search"
+                id="instructor-search"
+                type="search"
+                placeholder="Search by name"
+                autocomplete="off"
+            >
+
+            <div class="instructor-options">
+                {{ form.instructors }}
+            </div>
+            {{ form.instructors.errors }}
+            <p class="instructor-empty" id="instructor-empty" hidden>
+                No instructors match your search.
+            </p>
+        </aside>
+
+        <footer class="course-create-actions">
+            <a class="course-back-button" href="{% if editing %}{% url 'instructor_course_workspace' session.public_id %}{% else %}{% url 'my_courses' %}{% endif %}">
+                {% if editing %}Back to Course{% else %}Back to My Courses{% endif %}
+            </a>
+            <button class="course-create-button" type="submit">
+                {% if editing %}Save Course Changes{% else %}Confirm and Create Course{% endif %}
+            </button>
+        </footer>
+    </form>
+</section>
+
+<script src="{% static 'portal/js/course_create.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% for row in j35_grid_rows %}
+<tr data-instructor="{{ row.instructor.pk }}" data-instructor-name="{{ row.instructor.name_english }}">
+  <th scope="row" class="j35-name-col"><span tabindex="0" title="{{ row.instructor.name_english }}">{{ row.instructor.name_english }}</span></th><td class="j35-role-col"><span>{{ row.roles|default:'—' }}</span></td><td class="j35-team-col">{{ row.instructor.team.name|default:'—' }}</td>
+  {% for day in row.days %}
+  <td data-date="{{ day.date|date:'Y-m-d' }}" {% if forloop.counter == 8 %}class="j35-week-break"{% endif %}>
+    {% for cell in day.cells %}
+    <div class="j35-sheet-cell{% if cell.read_only %} is-linked-course{% endif %}" style="--j35-cell-bg:{{ cell.color }};--j35-cell-ink:{{ cell.ink }}" data-allocation="{{ cell.id }}" data-revision="{{ cell.revision }}" data-camp="{{ cell.camp }}" data-course="{{ cell.course }}" data-kind="{{ cell.kind }}" data-start-date="{{ cell.start_date }}" data-end-date="{{ cell.end_date }}" data-status="{{ cell.status }}" data-color="{{ cell.color }}" data-notes="{{ cell.notes }}" data-override-reason="{{ cell.override_reason }}" data-session="{{ cell.session }}" title="{{ cell.activity }} · {{ cell.status_label }}{% if cell.course_label %} · {{ cell.course_label }}{% endif %}">
+      {% if j35_grid_editable and not cell.read_only %}
+      <input class="j35-cell-text" value="{{ cell.activity }}" aria-label="Camp or task for {{ row.instructor.name_english }} on {{ day.date|date:'d M Y' }}" list="j35-camp-options" maxlength="200" autocomplete="off">
+      <div class="j35-cell-actions"><select class="j35-cell-status" aria-label="Assignment status: {{ cell.status_label }}" title="{{ cell.status_label }}"><option value="draft" {% if cell.status == 'draft' %}selected{% endif %}>Draft</option><option value="confirmed" {% if cell.status == 'confirmed' %}selected{% endif %}>Confirmed</option></select><button type="button" data-cell-details aria-label="Edit dates, course and colour" title="Cell details">⋯</button></div>
+      {% else %}{% if cell.course_url %}<a class="j35-cell-readonly" href="{{ cell.course_url }}" title="Open existing course">{{ cell.activity }}</a>{% else %}<span class="j35-cell-readonly">{{ cell.activity }}</span>{% endif %}<span class="j35-sr-only">{{ cell.status_label }}</span>{% endif %}
+      <span class="j35-confirmed-mark" {% if cell.status != 'confirmed' %}hidden{% endif %} title="Confirmed" aria-hidden="true">✓</span>
+    </div>
+    {% empty %}
+    {% if j35_grid_editable %}<div class="j35-sheet-cell j35-empty-cell" data-status="draft" data-color="#ffffff"><input class="j35-cell-text" aria-label="Camp or task for {{ row.instructor.name_english }} on {{ day.date|date:'d M Y' }}" list="j35-camp-options" maxlength="200" autocomplete="off"><div class="j35-cell-actions"><select class="j35-cell-status" aria-label="Assignment status"><option value="draft">Draft</option><option value="confirmed">Confirmed</option></select><button type="button" data-cell-details aria-label="Set course, dates and colour" title="Cell details">⋯</button></div></div>{% else %}<span class="j35-sr-only">No assignment</span>{% endif %}
+    {% endfor %}
+  </td>
+  {% endfor %}
+</tr>
+{% empty %}<tr><td colspan="17" class="j35-no-staff">No active staff yet. Add instructors in Staff to start planning.</td></tr>{% endfor %}

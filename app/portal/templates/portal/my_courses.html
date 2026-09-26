@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}My Courses | IQARUS TMS{% endblock %}
+{% block page_heading %}My Courses{% endblock %}
+{% block content %}
+<section class="module-page my-courses-page">
+  <h1 class="sr-only">My Courses — your job cards</h1>
+  <form class="job-card-filters" method="get" aria-label="Filter course job cards">
+    <label><span>Course name</span><select name="course">
+      <option value="">All courses</option>
+      {% for course in filter_courses %}<option value="{{ course.pk }}"{% if selected_course == course.pk|stringformat:"s" %} selected{% endif %}>{{ course.title_english }}</option>{% endfor %}
+    </select></label>
+    <label class="job-location-filter"><span>Location</span><select name="camp">
+      <option value="">All locations</option>
+      {% for camp in filter_camps %}<option value="{{ camp.pk }}"{% if selected_camp == camp.pk|stringformat:"s" %} selected{% endif %}>{{ camp }}</option>{% endfor %}
+    </select></label>
+    <label><span>Date from</span><input type="date" name="date_from" value="{{ date_from }}"></label>
+    <label><span>Date to</span><input type="date" name="date_to" value="{{ date_to }}"></label>
+    <label><span>Instructor</span><select name="instructor">
+      <option value="">All instructors</option>
+      {% for instructor in filter_instructors %}<option value="{{ instructor.pk }}"{% if selected_instructor == instructor.pk|stringformat:"s" %} selected{% endif %}>{{ instructor.name_english }}</option>{% endfor %}
+    </select></label>
+    <label><span>Status</span><select name="status">
+      <option value="">All statuses</option>
+      <option value="confirmed"{% if selected_status == "confirmed" %} selected{% endif %}>Confirmed</option>
+      <option value="in_progress"{% if selected_status == "in_progress" %} selected{% endif %}>In progress</option>
+      <option value="completed"{% if selected_status == "completed" %} selected{% endif %}>Completed</option>
+      <option value="cancelled"{% if selected_status == "cancelled" %} selected{% endif %}>Cancelled</option>
+    </select></label>
+    <div class="job-filter-actions"><button class="button-primary" type="submit">Apply</button><a class="button-secondary" href="{% url 'my_courses' %}">Clear</a></div>
+    {% if can_create %}<a class="button-primary create-job-card" href="{% url 'course_create' %}">Create job card</a>{% endif %}
+    {% if search %}<input type="hidden" name="q" value="{{ search }}">{% endif %}
+  </form>
+
+  <div class="job-card-grid">
+  {% for row in rows %}
+    <article class="job-card job-status-{{ row.lifecycle_status|default:row.session.status }}" aria-label="{{ row.display_course_name }} at {{ row.session.camp|default:'Camp not set' }}">
+      <a class="job-card-open" href="{% url 'instructor_course_workspace' row.session.public_id %}" aria-label="View course: {{ row.display_course_name }} at {{ row.session.camp|default:'Camp not set' }}"><span>View Course</span></a>
+      <dl class="job-card-fields">
+        <div class="job-card-field"><dt>Course name</dt><dd><span class="job-value job-course-name">{{ row.display_course_name }}</span></dd></div>
+        <div class="job-card-field"><dt>Location</dt><dd class="job-location"><span class="job-value">{{ row.session.camp|default:"Camp not set" }}</span></dd></div>
+        <div class="job-card-field"><dt>Date(s)</dt><dd><span class="job-value">{% if row.session.start_date %}{{ row.session.start_date|date:"D d M Y" }}{% if row.session.end_date and row.session.end_date != row.session.start_date %} – {{ row.session.end_date|date:"D d M Y" }}{% endif %}{% else %}Dates to be confirmed{% endif %}</span></dd></div>
+        <div class="job-card-field"><dt>Instructor(s)</dt><dd class="job-instructors">{% for assignment in row.assignments %}<span class="job-value">{{ assignment.instructor.name_english }}</span>{% empty %}<span class="job-value">Not assigned</span>{% endfor %}</dd></div>
+        <div class="job-card-field"><dt>Students</dt><dd class="job-metrics">
+          <span>Capacity <strong>{{ row.session.capacity|default_if_none:"—" }}</strong></span>
+          <span>Enrolled <strong>{{ row.selected_count }}</strong></span>
+          <span>Passed <strong>{{ row.passed_count }}</strong></span>
+          <span>Failed <strong>{{ row.failed_count }}</strong></span>
+          <span>Rejected <strong>{{ row.rejected_count }}</strong></span>
+        </dd></div>
+      </dl>
+      <div class="job-card-status"><span>{{ row.lifecycle_label|default:row.session.get_status_display }}</span></div>
+    </article>
+  {% empty %}
+    <div class="empty-panel"><h2>No courses found</h2><p>Confirmed assignments will appear here. Try adjusting the filters.</p></div>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}

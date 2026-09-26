@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inventory | IQARUS TMS{% endblock %}
+{% block page_heading %}Inventory{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'portal/css/inventory_layout.css' %}">
+<link rel="stylesheet" href="{% static 'portal/css/reference_tables.css' %}">
+<section class="page inventory-layout-page">
+  <h2>Inventory</h2>
+  <p class="muted">Stock transactions and warehouse stock levels.</p>
+  <div class="stock-layout">
+    <section class="stock-transactions">
+      {% if inventory_manager %}<section class="card">
+        <h3>Stock transactions</h3><div class="stock-top-actions"><a class="button" href="{% url 'inventory' %}">Create transaction</a><button class="button" type="submit" form="stock-issue-form">Save transaction</button></div>
+        <form method="post" class="form stock-issue-form" id="stock-issue-form">{% csrf_token %}
+          <input type="hidden" name="action" value="save_issue">
+          {% if editing_issue %}<input type="hidden" name="issue_id" value="{{ editing_issue.public_id }}"><input type="hidden" name="revision" value="{{ editing_issue.revision }}">{% else %}<input type="hidden" name="token" value="{{ transaction_token }}">{% endif %}
+          <div class="issue-meta">
+            <label>Date<input type="date" name="issued_on" required value="{% if editing_issue %}{{ editing_issue.issued_on|date:'Y-m-d' }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}"></label>
+            <label>Issued to<select name="instructor_id" required><option value="">Select instructor</option>{% for instructor in instructors %}<option value="{{ instructor.pk }}" {% if editing_issue.instructor_id == instructor.pk %}selected{% endif %}>{{ instructor.name_english }}</option>{% endfor %}</select></label>
+          </div>
+          <div class="table-wrap"><table class="table issue-lines"><thead><tr><th>Item</th><th>UOM</th><th>Quantity</th><th></th></tr></thead><tbody data-issue-lines>
+            {% for line in editing_issue.lines.all %}<tr>{% include "portal/partials/stock_issue_line.html" with line=line %}</tr>{% empty %}<tr>{% include "portal/partials/stock_issue_line.html" %}</tr>{% endfor %}
+          </tbody><tfoot><tr><th>Items issued</th><td colspan="3" data-issue-total aria-live="polite">Choose items and quantities</td></tr></tfoot></table></div>
+          <div class="issue-actions"><button class="button button-secondary" type="button" data-add-issue-line>+ Add item</button><label class="issue-notes">Notes<input name="notes" maxlength="1000" value="{{ editing_issue.notes }}" placeholder="Optional note"></label>{% if editing_issue %}<a class="button button-secondary" href="{% url 'inventory' %}">Cancel edit</a>{% endif %}</div>
+        </form>
+      </section>{% endif %}
+      <section class="card">
+        <h3>Transaction history</h3>
+        <div class="table-wrap"><table class="table transaction-history"><thead><tr><th>Date</th><th>Item</th><th>UOM</th><th>Quantity</th><th>Issued to</th><th>Status</th>{% if inventory_manager %}<th>Actions</th>{% endif %}</tr></thead><tbody>
+        {% for issue in transaction_page %}{% for line in issue.lines.all %}<tr><td>{{ issue.issued_on|date:"d/m/y" }}</td><td>{{ line.item.name }}</td><td>{{ line.item.unit }}</td><td class="number">{{ line.quantity }}</td><td>{{ issue.instructor.name_english }}</td><td>{% if issue.reversed_at %}Reversed{% else %}Issued{% endif %}</td>{% if inventory_manager %}<td>{% if forloop.first and not issue.reversed_at %}<div class="issue-actions"><a class="stock-small-action" href="?edit_issue={{ issue.public_id }}">Edit transaction</a><form method="post" data-confirm="Delete this transaction and restore its stock? Its history will remain.">{% csrf_token %}<input type="hidden" name="action" value="reverse_issue"><input type="hidden" name="issue_id" value="{{ issue.public_id }}"><input type="hidden" name="revision" value="{{ issue.revision }}"><button type="submit" class="stock-small-action">Delete transaction</button></form></div>{% endif %}</td>{% endif %}</tr>{% endfor %}{% empty %}<tr><td colspan="7">No transactions yet. Earlier issues remain in Inventory History below.</td></tr>{% endfor %}
+        </tbody></table></div>
+        <div class="inventory-pagination"><span>{{ transaction_page.paginator.count }} transaction{{ transaction_page.paginator.count|pluralize }}</span><div>{% if transaction_page.has_previous %}<a href="?transactions_page={{ transaction_page.previous_page_number }}">Previous</a>{% endif %} {% if transaction_page.has_next %}<a href="?transactions_page={{ transaction_page.next_page_number }}">Next</a>{% endif %}</div></div>
+      </section>
+    </section>
+    <section class="card stock-warehouse">
+      <h3>Warehouse stock levels</h3>{% if inventory_manager %}<div class="stock-top-actions"><a href="{% url 'inventory' %}?add_item=yes#stock-item-form" class="button">Add item</a><button class="button" type="button" data-edit-stock-items>Edit item</button></div>{% endif %}
+      <div class="table-wrap"><table class="table warehouse-table"><thead><tr><th>Item</th><th>UOM</th><th>Min</th><th>Max</th><th>Actual</th><th>Lead time</th>{% if inventory_manager %}<th></th>{% endif %}</tr></thead><tbody>
+      {% for item in items %}<tr><td>{{ item.name }}</td><td>{{ item.unit }}</td><td>{{ item.stock_policy.minimum_quantity|default:"0" }}</td><td>{{ item.stock_policy.maximum_quantity|default:"0" }}</td><td><span class="stock-state {{ item.stock_tone }}">{{ item.quantity_on_hand }}</span></td><td>{{ item.lead_time_display }}</td>{% if inventory_manager %}<td class="stock-item-action"><a href="?edit_item={{ item.pk }}#stock-item-form">Edit</a></td>{% endif %}</tr>{% empty %}<tr><td colspan="7">No warehouse items.</td></tr>{% endfor %}
+      </tbody></table></div>
+      <p class="stock-legend"><span class="stock-state good">≥100%</span><span class="stock-state warn">50–99%</span><span class="stock-state low">&lt;50%</span><span>of maximum stock target</span></p>
+      {% if inventory_manager %}<details id="stock-item-form" {% if editing_item or request.GET.add_item %}open{% endif %}><summary>{% if editing_item %}Edit stock item{% else %}Add stock item{% endif %}</summary><form method="post" class="form stock-item-form">{% csrf_token %}<input type="hidden" name="action" value="save_item">{% if editing_item %}<input type="hidden" name="item_id" value="{{ editing_item.pk }}">{% endif %}
+        <label class="wide">Item name<input name="name" maxlength="200" required value="{{ editing_item.name }}"></label><label>Type<select name="category"><option value="equipment">Equipment</option><option value="consumable" {% if editing_item.category == 'consumable' %}selected{% endif %}>Consumable</option></select></label><label>Unit<input name="unit" maxlength="50" required value="{{ editing_item.unit|default:'item' }}"></label><label>Minimum<input type="number" min="0" name="minimum_quantity" value="{{ editing_item.stock_policy.minimum_quantity|default:'0' }}"></label><label>Maximum<input type="number" min="0" name="maximum_quantity" value="{{ editing_item.stock_policy.maximum_quantity|default:'0' }}"></label><label>Actual stock<input type="number" min="0" name="quantity_on_hand" value="{{ editing_item.quantity_on_hand|default:'0' }}"></label><label>Lead time (days)<input type="number" min="0" name="lead_time_days" value="{{ editing_item.stock_policy.lead_time_days|default:'0' }}"></label><button class="button" type="submit">Save item</button>{% if editing_item %}<a href="{% url 'inventory' %}">Cancel edit</a>{% endif %}
+      </form></details>{% endif %}
+    </section>
+  </div>
+
+  <section class="card inventory-records">
+    <nav class="inventory-tabs" aria-label="Inventory records">
+      <a class="inventory-tab{% if inventory_view == 'balances' %} active{% endif %}" href="{% url 'inventory' %}?view=balances">
+        Current Instructor Balances
+        <span class="inventory-tab-count">{{ balance_count }}</span>
+      </a>
+      <a class="inventory-tab{% if inventory_view == 'history' %} active{% endif %}" href="{% url 'inventory' %}?view=history">
+        Inventory History
+        <span class="inventory-tab-count">{{ history_count }}</span>
+      </a>
+    </nav>
+
+    {% if inventory_view == "balances" %}
+      <div id="inventory-balances-panel">
+        <form class="inventory-filters" method="get">
+          <input type="hidden" name="view" value="balances">
+          <label>Search instructor or item
+            <input type="search" name="q" value="{{ filter_q }}" placeholder="Instructor or item name">
+          </label>
+          {% if inventory_manager %}<label>Team
+            <select name="team">
+              <option value="">All teams</option>
+              {% for team in teams %}<option value="{{ team.id }}"{% if filter_team == team.id|stringformat:"s" %} selected{% endif %}>{{ team.name }}</option>{% endfor %}
+            </select>
+          </label>{% else %}<span></span>{% endif %}
+          <div class="inventory-filter-actions">
+            <button class="button" type="submit">Apply</button>
+            <a class="button button-secondary" href="{% url 'inventory' %}?view=balances">Clear</a>
+          </div>
+        </form>
+        <div class="table-wrap"><table class="table"><thead><tr><th>Instructor</th><th>Team</th><th>Item</th><th>Type</th><th>Balance</th><th>Updated</th></tr></thead><tbody>
+          {% for balance in balance_page %}<tr><td><strong>{{ balance.instructor.name_english }}</strong></td><td>{{ balance.instructor.team|default:"—" }}</td><td>{{ balance.item.name }}</td><td>{{ balance.item.get_category_display }}</td><td><strong>{{ balance.quantity_on_hand }}</strong> {{ balance.item.unit }}</td><td>{{ balance.updated_at|date:"d M Y H:i" }}</td></tr>{% empty %}<tr><td colspan="6">No current balances match these filters.</td></tr>{% endfor %}
+        </tbody></table></div>
+        <div class="inventory-pagination">
+          <span>Page {{ balance_page.number }} of {{ balance_page.paginator.num_pages }} · {{ balance_page.paginator.count }} record{{ balance_page.paginator.count|pluralize }}</span>
+          <div class="inventory-pagination-actions">
+            {% if balance_page.has_previous %}<a class="button button-secondary" href="?view=balances&amp;q={{ filter_q|urlencode }}&amp;team={{ filter_team }}&amp;page={{ balance_page.previous_page_number }}">Previous</a>{% endif %}
+            {% if balance_page.has_next %}<a class="button button-secondary" href="?view=balances&amp;q={{ filter_q|urlencode }}&amp;team={{ filter_team }}&amp;page={{ balance_page.next_page_number }}">Next</a>{% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div id="inventory-history-panel">
+        <form class="inventory-filters history" method="get">
+          <input type="hidden" name="view" value="history">
+          <label>Search instructor or item
+            <input type="search" name="q" value="{{ filter_q }}" placeholder="Instructor or item name">
+          </label>
+          {% if inventory_manager %}<label>Team
+            <select name="team">
+              <option value="">All teams</option>
+              {% for team in teams %}<option value="{{ team.id }}"{% if filter_team == team.id|stringformat:"s" %} selected{% endif %}>{{ team.name }}</option>{% endfor %}
+            </select>
+          </label>{% endif %}
+          <label>Movement
+            <select name="movement_type">
+              <option value="">All movements</option>
+              {% for value, label in movement_types %}<option value="{{ value }}"{% if filter_movement == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+          </label>
+          <label>From
+            <input type="date" name="date_from" value="{{ filter_date_from }}">
+          </label>
+          <label>To
+            <input type="date" name="date_to" value="{{ filter_date_to }}">
+          </label>
+          <div class="inventory-filter-actions">
+            <button class="button" type="submit">Apply</button>
+            <a class="button button-secondary" href="{% url 'inventory' %}?view=history">Clear</a>
+          </div>
+        </form>
+        <div class="table-wrap"><table class="table"><thead><tr><th>Date</th><th>Instructor</th><th>Item</th><th>Movement</th><th>Change</th><th>Balance after</th><th>Course / Note</th></tr></thead><tbody>
+          {% for movement in movement_page %}<tr><td>{{ movement.created_at|date:"d M Y H:i" }}</td><td>{{ movement.instructor.name_english }}</td><td>{{ movement.item.name }}</td><td>{{ movement.get_movement_type_display }}</td><td class="{% if movement.quantity_change < 0 %}negative{% else %}positive{% endif %}">{{ movement.quantity_change|stringformat:"+d" }}</td><td>{{ movement.balance_after }}</td><td>{% if movement.session %}{{ movement.session.course.title_english }} · {{ movement.session.start_date|date:"d M Y" }} · {% endif %}{{ movement.notes|default:"—" }}</td></tr>{% empty %}<tr><td colspan="7">No inventory history matches these filters.</td></tr>{% endfor %}
+        </tbody></table></div>
+        <div class="inventory-pagination">
+          <span>Page {{ movement_page.number }} of {{ movement_page.paginator.num_pages }} · {{ movement_page.paginator.count }} record{{ movement_page.paginator.count|pluralize }}</span>
+          <div class="inventory-pagination-actions">
+            {% if movement_page.has_previous %}<a class="button button-secondary" href="?view=history&amp;q={{ filter_q|urlencode }}&amp;team={{ filter_team }}&amp;movement_type={{ filter_movement }}&amp;date_from={{ filter_date_from }}&amp;date_to={{ filter_date_to }}&amp;page={{ movement_page.previous_page_number }}">Previous</a>{% endif %}
+            {% if movement_page.has_next %}<a class="button button-secondary" href="?view=history&amp;q={{ filter_q|urlencode }}&amp;team={{ filter_team }}&amp;movement_type={{ filter_movement }}&amp;date_from={{ filter_date_from }}&amp;date_to={{ filter_date_to }}&amp;page={{ movement_page.next_page_number }}">Next</a>{% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+</section>
+<script defer src="{% static 'portal/js/inventory_layout.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Staff | IQARUS TMS{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'portal/css/staff_access.css' %}">
+<link rel="stylesheet" href="{% static 'portal/css/reference_tables.css' %}">
+<script defer src="{% static 'portal/js/staff_access.js' %}"></script>
+<section class="staff-access-page {% if editing %}is-editing{% endif %}" data-staff-page>
+  <div class="staff-access-heading"><div><h1>Staff</h1><p>Contact details, positions and access rights.</p></div><div class="staff-heading-tools">{% if staff_editable %}<button type="button" class="staff-access-primary" data-add-staff>Admin<br>Add staff</button><button type="button" class="staff-access-secondary" data-edit-staff aria-pressed="{{ editing|yesno:'true,false' }}">Admin<br>Edit staff</button>{% endif %}<a class="staff-access-clear" href="{% url 'staff' %}">Clear filters</a></div></div>
+  <form id="staff-filter-form" method="get">{% if editing %}<input type="hidden" name="edit" value="yes">{% endif %}{% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}</form>
+
+  <p class="staff-access-help staff-edit-only">Access follows positions. Administrators can choose an individual View or Edit override. “Role” restores the position default; a dash means the position has no grant. Administration keeps its account restrictions.</p>
+  {% for row in rows %}{% if row.editable %}<form id="staff-row-{{ row.staff.pk }}" method="post">{% csrf_token %}<input type="hidden" name="action" value="update_instructor"><input type="hidden" name="instructor_id" value="{{ row.staff.pk }}"><input type="hidden" name="permissions_present" value="yes"></form>{% endif %}{% endfor %}
+  <div class="staff-access-table-scroll" role="region" aria-label="Staff contact and permissions table" tabindex="0">
+    <table class="staff-access-table">
+      <thead><tr>
+        <th scope="col"><label>Search<input form="staff-filter-form" type="search" name="name" value="{{ current.name }}" placeholder="Search name"></label></th>
+        <th scope="col"><label>Mobile number<input form="staff-filter-form" type="search" name="phone" value="{{ current.phone }}" placeholder="Search number"></label></th>
+        <th scope="col"><label>Email address<input form="staff-filter-form" type="search" name="email" value="{{ current.email }}" placeholder="Search email"></label></th>
+        <th scope="col"><label>Team<select form="staff-filter-form" name="team"><option value="">All</option>{% for team in teams %}<option value="{{ team.pk }}" {% if selected_team == team.pk|stringformat:'s' %}selected{% endif %}>{{ team.name }}</option>{% endfor %}</select></label></th>
+        <th scope="col"><label>Position<select form="staff-filter-form" name="position"><option value="">All</option>{% for role in roles %}<option value="{{ role.pk }}" {% if selected_position == role.pk|stringformat:'s' %}selected{% endif %}>{{ role.name }}</option>{% endfor %}</select></label></th>
+        {% for feature,label in staff_features %}<th scope="col" class="staff-permission-col {% if feature == 'dashboard' or feature == 'j35' or feature == 'staff' %}staff-edit-only{% endif %}">{{ label }}</th>{% endfor %}
+        <th scope="col" class="staff-edit-only">Account</th>{% if staff_editable %}<th scope="col" class="staff-edit-only">Save</th>{% endif %}
+      </tr></thead>
+      <tbody>
+      {% for row in rows %}{% with staff=row.staff %}
+        <tr id="staff-entry-{{ staff.pk }}" {% if row.editable %}data-staff-editable{% endif %}>
+          <td><span class="staff-display">{{ staff.name_english }}</span>{% if row.editable %}<input class="staff-edit-only" form="staff-row-{{ staff.pk }}" name="name" value="{{ staff.name_english }}" maxlength="255" required aria-label="Full name for {{ staff.name_english }}">{% endif %}</td>
+          <td><span class="staff-display">{{ staff.phone|default:"—" }}</span>{% if row.editable %}<input class="staff-edit-only" form="staff-row-{{ staff.pk }}" name="phone" value="{{ staff.phone }}" maxlength="50" aria-label="Mobile for {{ staff.name_english }}">{% endif %}</td>
+          <td><span class="staff-display">{{ staff.email|default:"—" }}</span>{% if row.editable %}<input class="staff-edit-only" form="staff-row-{{ staff.pk }}" name="email" type="email" value="{{ staff.email }}" maxlength="254" aria-label="Email for {{ staff.name_english }}">{% endif %}</td>
+          <td><span class="staff-display">{{ staff.team|default:"—" }}</span>{% if row.editable %}<select class="staff-edit-only" form="staff-row-{{ staff.pk }}" name="team_id" aria-label="Team for {{ staff.name_english }}"><option value="">No team</option>{% for team in teams %}<option value="{{ team.pk }}" {% if staff.team_id == team.pk %}selected{% endif %}>{{ team.name }}</option>{% endfor %}</select>{% endif %}</td>
+          <td><span class="staff-display">{% for role in staff.roles.all %}{{ role.name }}{% if not forloop.last %} · {% endif %}{% empty %}—{% endfor %}</span>{% if row.editable %}<details class="staff-position-picker staff-edit-only"><summary><span data-position-label>Choose positions</span></summary><div class="staff-position-options">{% for role in roles %}<label><input form="staff-row-{{ staff.pk }}" type="checkbox" name="role_ids" value="{{ role.pk }}" {% if role in staff.roles.all %}checked{% elif not role.active %}disabled{% endif %}>{{ role.name }}{% if not role.active %} (inactive){% endif %}</label>{% endfor %}</div></details><label class="staff-access-check staff-edit-only"><input form="staff-row-{{ staff.pk }}" type="checkbox" name="is_inventory_supervisor" value="yes" {% if staff.is_inventory_supervisor %}checked{% endif %}>Inventory supervisor</label>{% endif %}</td>
+          {% for permission in row.permissions %}<td class="staff-permission-cell {% if permission.feature == 'dashboard' or permission.feature == 'j35' or permission.feature == 'staff' %}staff-edit-only{% endif %}"><span class="staff-display">{{ permission.level|default:"—"|title }}</span>{% if row.editable and staff.user_id and not staff.user.is_superuser %}<select class="staff-edit-only" form="staff-row-{{ staff.pk }}" name="permission_{{ permission.feature }}" aria-label="{{ permission.label }} access for {{ staff.name_english }}" title="Position default: {{ permission.default|default:'—'|title }}"><option value="" {% if not permission.override %}selected{% endif %}>Role · {{ permission.default|default:"—"|title }}</option><option value="view" {% if permission.override == 'view' %}selected{% endif %}>View</option><option value="edit" {% if permission.override == 'edit' %}selected{% endif %}>Edit</option></select>{% else %}<span class="staff-edit-only staff-access-level {% if permission.level == 'edit' %}is-edit{% endif %}">{{ permission.level|default:"—"|title }}</span>{% endif %}</td>{% endfor %}
+          <td class="staff-account-cell staff-edit-only">{% if row.editable %}<label class="staff-access-check"><input form="staff-row-{{ staff.pk }}" type="checkbox" name="active" value="yes" {% if staff.active %}checked{% endif %}>Active</label>{% else %}<span>{% if staff.active %}Active{% else %}Inactive{% endif %}</span>{% endif %}<small>{% if staff.user %}{{ staff.user.username }}{% else %}No account{% endif %}</small></td>
+          {% if staff_editable %}<td class="staff-edit-only">{% if row.editable %}<button form="staff-row-{{ staff.pk }}" class="staff-access-primary" type="submit">Save</button>{% else %}—{% endif %}</td>{% endif %}
+        </tr>
+      {% endwith %}{% empty %}<tr><td colspan="17">No staff match these filters.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="staff-filter-footer"><button form="staff-filter-form" type="submit" class="staff-access-primary">Apply filters</button><span>{{ rows|length }} staff</span></div>
+  {% if staff_editable %}
+  <div class="staff-access-admin-tools">
+    <details class="staff-access-panel staff-add-panel" id="staff-add-panel"><summary>Add staff account</summary>
+      <form method="post" class="staff-access-form">
+        {% csrf_token %}<input type="hidden" name="action" value="add_instructor">
+        <label>Full name<input name="name" maxlength="255" required autocomplete="name"></label>
+        <label>Mobile<input name="phone" maxlength="50" autocomplete="tel"></label>
+        <label>Email<input name="email" type="email" maxlength="254" required autocomplete="email"></label>
+        <label>Username<input name="username" maxlength="150" required autocomplete="off"></label>
+        <label>Initial password<input name="temporary_password" type="password" required autocomplete="new-password"></label>
+        <label>Team<select name="team_id"><option value="">No team</option>{% for team in teams %}<option value="{{ team.pk }}">{{ team.name }}</option>{% endfor %}</select></label>
+        <div class="staff-access-field"><span>Positions</span><details class="staff-position-picker"><summary><span data-position-label>Choose positions</span></summary><div class="staff-position-options">{% for role in roles %}{% if role.active %}<label><input type="checkbox" name="role_ids" value="{{ role.pk }}">{{ role.name }}</label>{% endif %}{% empty %}<span>Add a position first.</span>{% endfor %}</div></details></div>
+        <label class="staff-access-check"><input type="checkbox" name="require_password_change" value="yes"> Require password change at first sign-in</label>
+        <button class="staff-access-primary" type="submit">Create account</button>
+      </form>
+    </details>
+    <details class="staff-access-panel"><summary>Teams</summary>
+      <form class="staff-access-inline" method="post">{% csrf_token %}<input type="hidden" name="action" value="add_team"><input name="name" maxlength="150" required placeholder="Team name" aria-label="New team name"><button class="staff-access-primary" type="submit">Add team</button></form>
+      {% for team in teams %}<div class="staff-team-entry"><strong>{{ team.name }}{% if not team.active %} · Inactive{% endif %}</strong><form class="staff-access-inline" method="post">{% csrf_token %}<input type="hidden" name="action" value="set_team_leader"><input type="hidden" name="team_id" value="{{ team.pk }}"><select name="leader_id" aria-label="Leader for {{ team.name }}"><option value="">No team leader</option>{% for instructor in all_instructors %}<option value="{{ instructor.pk }}" {% if team.leader_id == instructor.pk %}selected{% endif %}>{{ instructor.name_english }}</option>{% endfor %}</select><button class="staff-access-secondary" type="submit">Save</button></form><form method="post">{% csrf_token %}<input type="hidden" name="action" value="toggle_team"><input type="hidden" name="team_id" value="{{ team.pk }}"><button class="staff-access-text" type="submit">{% if team.active %}Deactivate{% else %}Activate{% endif %}</button></form></div>{% endfor %}
+    </details>
+    <details class="staff-access-panel"><summary>Positions</summary>
+      <form class="staff-access-inline" method="post">{% csrf_token %}<input type="hidden" name="action" value="add_role"><input name="name" maxlength="150" required placeholder="Position name" aria-label="New position name"><button class="staff-access-primary" type="submit">Add position</button></form>
+      {% for role in roles %}<form class="staff-role-entry" method="post">{% csrf_token %}<input type="hidden" name="action" value="toggle_role"><input type="hidden" name="role_id" value="{{ role.pk }}"><span>{{ role.name }}{% if not role.active %} · Inactive{% endif %}</span><button class="staff-access-text" type="submit">{% if role.active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endfor %}
+    </details>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

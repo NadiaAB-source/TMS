@@ -1,0 +1,56 @@
+{% load static %}
+{% if j35_grid_visible %}
+<link rel="stylesheet" href="{% static 'portal/css/j35_grid.css' %}">
+<script defer src="{% static 'portal/js/j35_grid.js' %}"></script>
+<section class="j35-sheet" id="j35-grid" data-editable="{{ j35_grid_editable|yesno:'true,false' }}" data-save-url="{% url 'j35_grid_save' %}" data-start="{{ j35_grid_start|date:'Y-m-d' }}">
+  <div class="j35-sheet-bar">
+    <form method="get" class="j35-sheet-dates" action="#j35-grid">
+      {% for key,value in j35_grid_preserved %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endfor %}
+      <h2>J35 distribution</h2>
+      <label>From <input type="date" name="j35_start" value="{{ j35_grid_start|date:'Y-m-d' }}" aria-label="J35 display from"></label>
+      <span>to <strong>{{ j35_grid_end|date:'d M Y' }}</strong></span>
+      <button type="submit" class="j35-sheet-button">Display</button>
+    </form>
+    <div class="j35-sheet-week"><a href="{{ j35_grid_previous }}" aria-label="Previous week">←</a><span>Two weeks</span><a href="{{ j35_grid_next }}" aria-label="Next week">→</a></div>
+  </div>
+  {% if j35_grid_editable %}
+  <div class="j35-sheet-tools">
+    <label>Course for new cells <select data-default-course aria-label="Course for new J35 cells"><option value="">Choose course</option>{% for course in j35_grid_courses %}<option value="{{ course.pk }}">{{ course.title_english }}</option>{% endfor %}</select></label>
+    <span>Type a camp or task. Enter saves a draft. Use ▾ to confirm; cell details set dates and colour.</span>
+    <form class="j35-csrf">{% csrf_token %}</form>
+  </div>
+  <datalist id="j35-camp-options">{% for camp in j35_grid_camps %}<option value="{{ camp.name }}" data-camp="{{ camp.pk }}"></option>{% endfor %}</datalist>
+  {% endif %}
+  <div class="j35-sheet-scroll" tabindex="0" role="region" aria-label="Two-week instructor distribution. Scroll horizontally to see all days.">
+    <table class="j35-sheet-table" style="--j35-row-height:{{ j35_grid_row_height }}px">
+      <caption class="j35-sr-only">Instructor assignments from {{ j35_grid_start|date:'d M Y' }} to {{ j35_grid_end|date:'d M Y' }}</caption>
+      <thead><tr><th scope="col" class="j35-name-col">Instructor</th><th scope="col" class="j35-role-col">Role</th><th scope="col" class="j35-team-col">Team</th>{% for day in j35_grid_days %}<th scope="col" {% if forloop.counter == 8 %}class="j35-week-break"{% endif %}><span>{{ day|date:'D' }}</span> {{ day|date:'d M' }}</th>{% endfor %}</tr></thead>
+      <tbody>{% include 'portal/_j35_grid_rows.html' %}</tbody>
+    </table>
+  </div>
+  <div class="j35-sheet-feedback" role="status" aria-live="polite" hidden></div>
+  {% if j35_grid_editable %}
+  <dialog class="j35-cell-dialog" aria-labelledby="j35-editor-title">
+    <form method="dialog" class="j35-cell-form">
+      <div class="j35-editor-head"><h3 id="j35-editor-title">Assignment details</h3><button type="button" data-close-dialog aria-label="Close assignment details">×</button></div>
+      <p class="j35-editor-person"></p>
+      <input type="hidden" name="allocation"><input type="hidden" name="instructor"><input type="hidden" name="revision">
+      <label class="j35-span-2">Camp or task <input name="activity" maxlength="200" list="j35-camp-options" required autocomplete="off"></label>
+      <label>Type <select name="kind"><option value="course">Course</option><option value="admin">Administrative duty</option><option value="leave">Leave</option><option value="other">Other task</option></select></label>
+      <label>Status <select name="status"><option value="draft">Draft</option><option value="confirmed">Confirmed</option></select></label>
+      <label class="j35-span-2" data-course-field>Course <select name="course"><option value="">Choose course</option>{% for course in j35_grid_courses %}<option value="{{ course.pk }}">{{ course.title_english }}</option>{% endfor %}</select></label>
+      <label>From <input name="start_date" type="date" required></label>
+      <label>Through <input name="end_date" type="date" required></label>
+      <label>Cell colour <input name="color" type="color" value="#ffffff"></label><fieldset class="j35-span-2 j35-palette"><legend>J35 colours</legend><button type="button" data-j35-color="#ffffff" style="background:#ffffff" aria-label="Spreadsheet colour 1" title="Spreadsheet colour 1"></button><button type="button" data-j35-color="#8db4e2" style="background:#8db4e2" aria-label="Spreadsheet colour 2" title="Spreadsheet colour 2"></button><button type="button" data-j35-color="#ffff00" style="background:#ffff00" aria-label="Spreadsheet colour 3" title="Spreadsheet colour 3"></button><button type="button" data-j35-color="#d9d9d9" style="background:#d9d9d9" aria-label="Spreadsheet colour 4" title="Spreadsheet colour 4"></button><button type="button" data-j35-color="#1e04bc" style="background:#1e04bc" aria-label="Spreadsheet colour 5" title="Spreadsheet colour 5"></button><button type="button" data-j35-color="#abf7d7" style="background:#abf7d7" aria-label="Spreadsheet colour 6" title="Spreadsheet colour 6"></button><button type="button" data-j35-color="#0070c0" style="background:#0070c0" aria-label="Spreadsheet colour 7" title="Spreadsheet colour 7"></button><button type="button" data-j35-color="#c6bfcb" style="background:#c6bfcb" aria-label="Spreadsheet colour 8" title="Spreadsheet colour 8"></button><button type="button" data-j35-color="#58b065" style="background:#58b065" aria-label="Spreadsheet colour 9" title="Spreadsheet colour 9"></button><button type="button" data-j35-color="#c6f47c" style="background:#c6f47c" aria-label="Spreadsheet colour 10" title="Spreadsheet colour 10"></button><button type="button" data-j35-color="#00b050" style="background:#00b050" aria-label="Spreadsheet colour 11" title="Spreadsheet colour 11"></button><button type="button" data-j35-color="#00b0f0" style="background:#00b0f0" aria-label="Spreadsheet colour 12" title="Spreadsheet colour 12"></button><button type="button" data-j35-color="#d063e6" style="background:#d063e6" aria-label="Spreadsheet colour 13" title="Spreadsheet colour 13"></button><button type="button" data-j35-color="#fd71f3" style="background:#fd71f3" aria-label="Spreadsheet colour 14" title="Spreadsheet colour 14"></button><button type="button" data-j35-color="#92d050" style="background:#92d050" aria-label="Spreadsheet colour 15" title="Spreadsheet colour 15"></button><button type="button" data-j35-color="#2ac9c4" style="background:#2ac9c4" aria-label="Spreadsheet colour 16" title="Spreadsheet colour 16"></button><button type="button" data-j35-color="#a8969b" style="background:#a8969b" aria-label="Spreadsheet colour 17" title="Spreadsheet colour 17"></button><button type="button" data-j35-color="#fff2cc" style="background:#fff2cc" aria-label="Spreadsheet colour 18" title="Spreadsheet colour 18"></button><button type="button" data-j35-color="#8df7f4" style="background:#8df7f4" aria-label="Spreadsheet colour 19" title="Spreadsheet colour 19"></button><button type="button" data-j35-color="#afe378" style="background:#afe378" aria-label="Spreadsheet colour 20" title="Spreadsheet colour 20"></button><button type="button" data-j35-color="#ccb964" style="background:#ccb964" aria-label="Spreadsheet colour 21" title="Spreadsheet colour 21"></button><button type="button" data-j35-color="#9df17f" style="background:#9df17f" aria-label="Spreadsheet colour 22" title="Spreadsheet colour 22"></button><button type="button" data-j35-color="#fcd5b4" style="background:#fcd5b4" aria-label="Spreadsheet colour 23" title="Spreadsheet colour 23"></button><button type="button" data-j35-color="#e5b875" style="background:#e5b875" aria-label="Spreadsheet colour 24" title="Spreadsheet colour 24"></button><button type="button" data-j35-color="#fbd1e3" style="background:#fbd1e3" aria-label="Spreadsheet colour 25" title="Spreadsheet colour 25"></button><button type="button" data-j35-color="#bd8df7" style="background:#bd8df7" aria-label="Spreadsheet colour 26" title="Spreadsheet colour 26"></button><button type="button" data-j35-color="#ffc000" style="background:#ffc000" aria-label="Spreadsheet colour 27" title="Spreadsheet colour 27"></button><button type="button" data-j35-color="#3cf69d" style="background:#3cf69d" aria-label="Spreadsheet colour 28" title="Spreadsheet colour 28"></button><button type="button" data-j35-color="#3be543" style="background:#3be543" aria-label="Spreadsheet colour 29" title="Spreadsheet colour 29"></button><button type="button" data-j35-color="#9c6098" style="background:#9c6098" aria-label="Spreadsheet colour 30" title="Spreadsheet colour 30"></button><button type="button" data-j35-color="#da9694" style="background:#da9694" aria-label="Spreadsheet colour 31" title="Spreadsheet colour 31"></button><button type="button" data-j35-color="#abf7f5" style="background:#abf7f5" aria-label="Spreadsheet colour 32" title="Spreadsheet colour 32"></button><button type="button" data-j35-color="#f0b97a" style="background:#f0b97a" aria-label="Spreadsheet colour 33" title="Spreadsheet colour 33"></button></fieldset>
+      <label class="j35-span-2">Notes <textarea name="notes" maxlength="4000" rows="2"></textarea></label>
+      <details class="j35-span-2 j35-extra-details"><summary>Conflicts and existing courses</summary>
+        <label>Conflict override reason <textarea name="override_reason" maxlength="2000" rows="2" placeholder="Required only for deliberate overlapping work"></textarea></label>
+        <label>Join an existing course <select name="session"><option value="">Match automatically</option>{% for session in j35_grid_sessions %}<option value="{{ session.pk }}">{{ session.start_date|date:'d M Y' }} · {{ session.course.title_english }} · {{ session.camp.name|default:'No camp' }} · {{ session.reference_code|default:session.pk }}</option>{% endfor %}</select></label>
+      </details>
+      <p class="j35-editor-error j35-span-2" role="alert" hidden></p>
+      <div class="j35-editor-actions j35-span-2"><button type="button" data-clear-cell hidden>Clear draft</button><button type="button" data-close-dialog>Cancel</button><button type="submit" class="j35-sheet-button">Save assignment</button></div>
+    </form>
+  </dialog>
+  {% endif %}
+</section>
+{% endif %}

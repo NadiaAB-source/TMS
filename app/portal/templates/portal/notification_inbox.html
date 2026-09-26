@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications | IQARUS TMS{% endblock %}
+
+{% block content %}
+<section class="notification-inbox">
+  <header class="notification-inbox-header">
+    <div>
+      <p class="notification-eyebrow">ACCOUNT</p>
+      <h1>Notifications</h1>
+      <p class="notification-intro">Course and planning updates sent to your account.</p>
+    </div>
+    <span class="notification-unread-summary">{{ unread_count }} unread</span>
+  </header>
+
+  <div class="notification-list">
+    {% for notification in notifications %}
+      <article class="notification-item notification-item--{{ notification.category }} {% if not notification.is_read %}is-unread{% endif %}">
+        <div class="notification-copy">
+          <div class="notification-copy-header">
+            <h2>{{ notification.title }}</h2>
+            {% if not notification.is_read %}<span class="notification-state">New</span>{% endif %}
+          </div>
+          <p>{{ notification.message }}</p>
+          <time datetime="{{ notification.created_at|date:'c' }}">
+            {{ notification.created_at|date:"d M Y, H:i" }}
+          </time>
+        </div>
+        <div class="notification-actions">
+          {% if notification.safe_link %}
+            <a class="notification-open" href="{{ notification.safe_link }}">Open</a>
+          {% endif %}
+          {% if not notification.is_read %}
+            <form method="post" action="{% url 'notification_mark_read' notification.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{% url 'notification_inbox' %}">
+              <button type="submit">Mark read</button>
+            </form>
+          {% endif %}
+        </div>
+      </article>
+    {% empty %}
+      <p class="notification-empty">You do not have any notifications.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

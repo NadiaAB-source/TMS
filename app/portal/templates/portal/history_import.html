@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Import historical courses | IQARUS TMS{% endblock %}
+{% block content %}
+<section class="directory-page" style="max-width:1100px;margin:auto">
+  <header class="page-intro"><div><h2>Import historical courses</h2><p>Upload your annotated records together, check the preview, then import.</p></div><a class="button-secondary" href="{% url 'reports' %}">Reports</a></header>
+  <p><a class="button-secondary" href="?download=example">Download Excel example</a> <a class="button-secondary" href="?download=names">Download camp, staff and item names</a></p>
+  <ol style="line-height:1.7"><li>Replace the sample rows in the Excel file with your records. Keep its sheet names and headings.</li><li>Use one course key to connect its students, trainers, results and material use.</li><li>For stamped lists, put the Excel file and a <code>documents</code> folder into one ZIP. List each scan in the Documents sheet.</li></ol>
+  <p>Course numbers are reordered by course date across the website. Importing older courses can change existing numbers; the course links and QR codes stay attached to the same courses. Historical imports do not send emails or trainer notifications.</p>
+  {% if error %}<div role="alert" style="background:#fce8ef;color:#7c2444;padding:12px;border-radius:8px;margin:12px 0">{{ error }}</div>{% endif %}
+  <form method="post" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:16px 0">
+    {% csrf_token %}<label>Excel file or ZIP<input type="file" name="history_file" accept=".xlsx,.zip" required></label><button class="button-primary" type="submit">Check and preview</button>
+  </form>
+  {% if summary %}
+    <section style="background:#f6f7f8;border:1px solid #dfe3e8;border-radius:10px;padding:16px;margin:16px 0">
+    <h3>{% if summary.already_imported %}Already imported{% else %}Import preview{% endif %}</h3>
+    <p>{{ summary.message }}</p>
+    {% if not summary.already_imported %}
+      <table style="width:100%;max-width:680px"><tbody>
+      <tr><th style="text-align:left">Courses</th><td>{{ summary.courses }}</td></tr>
+      <tr><th style="text-align:left">New students / existing students matched</th><td>{{ summary.students_created }} / {{ summary.students_matched }}</td></tr>
+      <tr><th style="text-align:left">Registrations / trainer assignments</th><td>{{ summary.registrations }} / {{ summary.trainers }}</td></tr>
+      <tr><th style="text-align:left">Day 1 lists / stamped lists</th><td>{{ summary.day1_lists }} / {{ summary.stamped_lists }}</td></tr>
+      <tr><th style="text-align:left">Material records / units deducted now</th><td>{{ summary.material_rows }} / {{ summary.units_deducted_now }}</td></tr>
+      </tbody></table>
+      <p>The preview has not saved these records. Import will create all of them together.</p>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="apply"><input type="hidden" name="token" value="{{ token }}"><button class="button-primary" type="submit">Import these records</button></form>
+    {% endif %}
+    </section>
+  {% endif %}
+  <p style="color:#626a73">For Materials, use <code>already_in_balance</code> when historical use is already included in today's stock. Use <code>deduct_now</code> only when that stock still needs to be deducted. Uploaded scans become the course's stamped-list records; no missing signatures or documents are invented.</p>
+</section>
+{% endblock %}

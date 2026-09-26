@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Staff & Teams | IQARUS TMS{% endblock %}
+
+{% block content %}
+<style>
+.staff-page{max-width:1320px;margin:0 auto;padding:4px 0 24px}.staff-page h1{margin:0;font-size:1.8rem}.staff-page>p{margin:5px 0 0;color:#66717c;font-size:.92rem}.staff-grid{display:grid;grid-template-columns:minmax(255px,.68fr) minmax(0,1.45fr);gap:12px;margin-top:13px}.staff-card{margin:0 0 10px;padding:12px;background:#fff;border:1px solid #dfe4e8;border-radius:10px}.staff-card h2{margin:0 0 9px;font-size:1.15rem}.staff-card summary{cursor:pointer;font-size:.92rem}.staff-form{display:grid;gap:8px}.staff-form input,.staff-form select,.staff-table input,.staff-table select{box-sizing:border-box;min-height:36px;width:100%;padding:7px 9px;border:1px solid #cbd3da;border-radius:6px;background:#fff;font:inherit}.staff-button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 11px;color:#fff;background:#f37321;border:1px solid #f37321;border-radius:7px;font:inherit;font-size:.88rem;font-weight:800;cursor:pointer}.staff-button.secondary{color:#38434d;background:#fff;border-color:#cbd3da}.staff-message{margin:9px 0;padding:9px 10px;background:#fff2e8;border-radius:7px}.staff-note{margin:4px 0 0;color:#697581;font-size:.76rem;line-height:1.3}.staff-item{padding:9px 0;border-bottom:1px solid #e5e8eb}.staff-item:last-child{border-bottom:0}.staff-inline{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:6px}.staff-field{display:grid;gap:4px;color:#56616d;font-size:.76rem;font-weight:800}.staff-table-wrap{overflow:auto}.staff-table{width:100%;min-width:830px;border-collapse:collapse}.staff-table th,.staff-table td{padding:8px;border-bottom:1px solid #e5e8eb;text-align:left;vertical-align:top}.staff-table th{color:#56616d;background:#f5f7f8;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase}.staff-table td{font-size:.88rem}.staff-table td:first-child{min-width:210px}.staff-table td:nth-child(2){width:128px}.staff-table td:nth-child(3){width:190px}.staff-table td:nth-child(4),.staff-table td:nth-child(5){white-space:nowrap}.staff-check{display:flex;align-items:center;gap:5px;padding-top:8px;font-size:.82rem}.staff-check input{width:auto;min-height:0;margin:0}.position-picker{position:relative;width:min(178px,100%)}.position-picker summary{display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:36px;padding:7px 9px;color:#39424a;background:#fff;border:1px solid #cbd3da;border-radius:6px;cursor:pointer;font-size:.82rem;list-style:none}.position-picker summary::-webkit-details-marker{display:none}.position-picker summary::after{content:"⌄";font-size:1rem;line-height:1;transition:transform .16s ease}.position-picker[open] summary{border-color:#f37321;border-bottom-right-radius:0;border-bottom-left-radius:0}.position-picker[open] summary::after{transform:rotate(180deg)}.position-picker-options{display:grid;gap:2px;max-height:160px;overflow:auto;padding:5px 7px;background:#fff;border:1px solid #cbd3da;border-top:0;border-radius:0 0 6px 6px;box-shadow:0 7px 14px rgba(30,36,42,.08)}.position-picker-option{display:flex;align-items:center;gap:6px;padding:3px 1px;font-size:.8rem;line-height:1.2}.position-picker-option input{width:auto;min-height:0;margin:0}.position-picker-option.inactive{color:#7d858c}.position-picker-count{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.staff-account-help{display:grid;gap:5px;padding:7px 8px;background:#f7f8f9;border:1px solid #e1e4e7;border-radius:6px}.staff-account-help .staff-check{padding:0}.staff-save-cell{padding-top:8px!important}@media(max-width:960px){.staff-grid{grid-template-columns:1fr}.staff-page{padding:2px 0 18px}}@media(max-width:620px){.staff-table{min-width:760px}}
+</style>
+
+<section class="staff-page">
+  <p class="eyebrow">ADMINISTRATION</p>
+  <h1>Staff &amp; Teams</h1>
+  <p>Choose one or more positions from the compact Positions dropdown. New accounts use a strong initial password; requiring a password change is optional.</p>
+
+  <div class="staff-grid">
+    <div>
+      <details class="staff-card" open>
+        <summary><strong>Add team</strong></summary>
+        <form class="staff-form" method="post" style="margin-top:10px">
+          {% csrf_token %}<input type="hidden" name="action" value="add_team">
+          <input name="name" maxlength="150" required placeholder="Team name">
+          <button class="staff-button" type="submit">Add team</button>
+        </form>
+      </details>
+
+      <details class="staff-card">
+        <summary><strong>Add position</strong></summary>
+        <form class="staff-form" method="post" style="margin-top:10px">
+          {% csrf_token %}<input type="hidden" name="action" value="add_role">
+          <input name="name" maxlength="150" required placeholder="Position name, e.g. J35 Planner">
+          <button class="staff-button" type="submit">Add position</button>
+        </form>
+      </details>
+
+      <details class="staff-card">
+        <summary><strong>Add staff account</strong></summary>
+        <form class="staff-form" method="post" style="margin-top:10px">
+          {% csrf_token %}<input type="hidden" name="action" value="add_instructor">
+          <input name="name" maxlength="255" required placeholder="Full name">
+          <input type="email" name="email" maxlength="254" required placeholder="Email">
+          <input name="username" maxlength="150" required autocomplete="username" placeholder="Username">
+          <input type="password" name="temporary_password" required autocomplete="new-password" placeholder="Initial password">
+          <label>Team
+            <select name="team_id"><option value="">No team</option>{% for team in teams %}<option value="{{ team.id }}">{{ team.name }}</option>{% endfor %}</select>
+          </label>
+          <div class="staff-field"><span>Positions</span>
+            <details class="position-picker">
+              <summary><span class="position-picker-count">Choose positions</span></summary>
+              <div class="position-picker-options">
+                {% for role in roles %}
+                  <label class="position-picker-option {% if not role.active %}inactive{% endif %}"><input type="checkbox" name="role_ids" value="{{ role.id }}" {% if not role.active %}disabled{% endif %}> {{ role.name }}{% if not role.active %} (inactive){% endif %}</label>
+                {% empty %}<span class="staff-note">Add positions first.</span>{% endfor %}
+              </div>
+            </details>
+          </div>
+          <div class="staff-account-help">
+            <label class="staff-check"><input type="checkbox" name="require_password_change" value="yes"> Require a password change at first sign-in</label>
+            <span class="staff-note">Leave this clear if the instructor should keep the initial password.</span>
+          </div>
+          <button class="staff-button" type="submit">Create account</button>
+        </form>
+      </details>
+
+      <article class="staff-card">
+        <h2>Teams</h2>
+        {% for team in teams %}
+          <div class="staff-item">
+            <strong>{{ team.name }}</strong> · {% if team.active %}Active{% else %}Inactive{% endif %}
+            <form class="staff-form" method="post" style="margin-top:7px">
+              {% csrf_token %}<input type="hidden" name="action" value="set_team_leader"><input type="hidden" name="team_id" value="{{ team.id }}">
+              <label>Team leader<select name="leader_id"><option value="">No leader</option>{% for instructor in instructors %}<option value="{{ instructor.id }}" {% if team.leader_id == instructor.id %}selected{% endif %}>{{ instructor.name_english }}</option>{% endfor %}</select></label>
+              <button class="staff-button secondary" type="submit">Save leader</button>
+            </form>
+            <form method="post" style="margin-top:6px">{% csrf_token %}<input type="hidden" name="action" value="toggle_team"><input type="hidden" name="team_id" value="{{ team.id }}"><button class="staff-button secondary" type="submit">{% if team.active %}Deactivate{% else %}Activate{% endif %}</button></form>
+          </div>
+        {% empty %}<p class="staff-note">No teams yet.</p>{% endfor %}
+      </article>
+
+      <article class="staff-card">
+        <h2>Positions</h2>
+        {% for role in roles %}
+          <div class="staff-item">
+            <strong>{{ role.name }}</strong> · {% if role.active %}Active{% else %}Inactive{% endif %}
+            <form method="post" style="margin-top:6px">{% csrf_token %}<input type="hidden" name="action" value="toggle_role"><input type="hidden" name="role_id" value="{{ role.id }}"><button class="staff-button secondary" type="submit">{% if role.active %}Deactivate{% else %}Activate{% endif %}</button></form>
+          </div>
+        {% empty %}<p class="staff-note">Add positions before assigning staff.</p>{% endfor %}
+      </article>
+    </div>
+
+    <article class="staff-card">
+      <h2>Staff</h2>
+      <div class="staff-table-wrap">
+        {% for instructor in instructors %}
+          <form id="staff-{{ instructor.id }}" method="post">{% csrf_token %}<input type="hidden" name="action" value="update_instructor"><input type="hidden" name="instructor_id" value="{{ instructor.id }}"></form>
+        {% endfor %}
+        <table class="staff-table">
+          <thead><tr><th>Name / account</th><th>Team</th><th>Positions</th><th>Inventory</th><th>Active</th><th></th></tr></thead>
+          <tbody>
+            {% for instructor in instructors %}
+            <tr>
+              <td>
+                <input form="staff-{{ instructor.id }}" name="name" maxlength="255" value="{{ instructor.name_english }}">
+                <input form="staff-{{ instructor.id }}" type="email" name="email" maxlength="254" value="{{ instructor.email }}" placeholder="Email" style="margin-top:5px">
+                <p class="staff-note">{% if instructor.user %}{{ instructor.user.username }}{% else %}No account yet{% endif %}</p>
+              </td>
+              <td><select form="staff-{{ instructor.id }}" name="team_id"><option value="">No team</option>{% for team in teams %}<option value="{{ team.id }}" {% if instructor.team_id == team.id %}selected{% endif %}>{{ team.name }}</option>{% endfor %}</select></td>
+              <td>
+                <details class="position-picker">
+                  <summary><span class="position-picker-count">Choose positions</span></summary>
+                  <div class="position-picker-options">
+                    {% for role in roles %}
+                      <label class="position-picker-option {% if not role.active and role not in instructor.roles.all %}inactive{% endif %}"><input form="staff-{{ instructor.id }}" type="checkbox" name="role_ids" value="{{ role.id }}" {% if role in instructor.roles.all %}checked{% endif %} {% if not role.active and role not in instructor.roles.all %}disabled{% endif %}> {{ role.name }}{% if not role.active %} (inactive){% endif %}</label>
+                    {% empty %}<span class="staff-note">No positions available.</span>{% endfor %}
+                  </div>
+                </details>
+              </td>
+              <td><label class="staff-check"><input form="staff-{{ instructor.id }}" type="checkbox" name="is_inventory_supervisor" value="yes" {% if instructor.is_inventory_supervisor %}checked{% endif %}> Supervisor</label></td>
+              <td><label class="staff-check"><input form="staff-{{ instructor.id }}" type="checkbox" name="active" value="yes" {% if instructor.active %}checked{% endif %}> Active</label></td>
+              <td class="staff-save-cell"><button form="staff-{{ instructor.id }}" class="staff-button" type="submit">Save</button></td>
+            </tr>
+            {% empty %}<tr><td colspan="6">No staff records found.</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </div>
+</section>
+
+<script>
+(() => {
+  document.querySelectorAll('.position-picker').forEach((picker) => {
+    const count = picker.querySelector('.position-picker-count');
+    const inputs = [...picker.querySelectorAll('input[type="checkbox"]:not(:disabled)')];
+    const update = () => {
+      const selected = inputs.filter((input) => input.checked).length;
+      count.textContent = selected ? `${selected} position${selected === 1 ? '' : 's'} selected` : 'Choose positions';
+    };
+    inputs.forEach((input) => input.addEventListener('change', update));
+    update();
+  });
+})();
+</script>
+{% endblock %}

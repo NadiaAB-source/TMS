@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+    <meta name="robots" content="noindex,nofollow">
+    <title>Course Registration | IQARUS</title>
+
+    <style>
+        :root {
+            --orange: #f37321;
+            --orange-dark: #cc570e;
+            --ink: #25282c;
+            --muted: #68717d;
+            --line: #dfe3e7;
+            --surface: #ffffff;
+            --background: #f4f5f7;
+            --success: #167653;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--ink);
+            font-family:
+                Inter, Arial, "Noto Sans Arabic", sans-serif;
+        }
+
+        .registration-page {
+            width: min(760px, calc(100% - 28px));
+            margin: 28px auto 55px;
+        }
+
+        .registration-brand {
+            margin-bottom: 18px;
+            color: var(--orange);
+            font-size: .82rem;
+            font-weight: 850;
+            letter-spacing: .12em;
+        }
+
+        .course-card,
+        .form-card,
+        .message-card {
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(31, 41, 55, .06);
+        }
+
+        .course-card {
+            margin-bottom: 16px;
+            border-top: 5px solid var(--orange);
+        }
+
+        .course-card h1 {
+            margin: 0 0 12px;
+            font-size: clamp(1.7rem, 5vw, 2.5rem);
+        }
+
+        .course-details {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .course-details div {
+            padding: 13px;
+            background: #f7f8fa;
+            border-radius: 12px;
+        }
+
+        .course-details small {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--muted);
+        }
+
+        .form-card h2 {
+            margin-top: 0;
+        }
+
+        .form-intro {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .form-field {
+            margin-top: 18px;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 750;
+        }
+
+        .form-field input {
+            width: 100%;
+            min-height: 50px;
+            padding: 11px 13px;
+            border: 1px solid #cfd5db;
+            border-radius: 11px;
+            background: #fff;
+            color: var(--ink);
+            font: inherit;
+        }
+
+        .form-field input:focus {
+            border-color: var(--orange);
+            outline: 3px solid rgba(243, 115, 33, .14);
+        }
+
+        .uppercase-input {
+            text-transform: uppercase;
+        }
+
+        .field-errors {
+            margin: 7px 0 0;
+            padding: 0;
+            color: #b42318;
+            list-style: none;
+            font-size: .9rem;
+        }
+
+        .submit-button {
+            width: 100%;
+            min-height: 52px;
+            margin-top: 24px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--orange);
+            color: #fff;
+            font: inherit;
+            font-weight: 850;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: var(--orange-dark);
+        }
+
+        .message-card {
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .success-card {
+            border-color: #a7dec8;
+            background: #effaf5;
+        }
+
+        .success-card h2 {
+            color: var(--success);
+        }
+
+        .closed-card {
+            border-color: #ffd0b2;
+            background: #fff8f3;
+        }
+
+        @media (max-width: 580px) {
+            .registration-page {
+                margin-top: 14px;
+            }
+
+            .course-card,
+            .form-card,
+            .message-card {
+                padding: 19px;
+                border-radius: 16px;
+            }
+
+            .course-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="registration-page">
+    <div class="registration-brand">IQARUS COURSE REGISTRATION</div>
+
+    <section class="course-card">
+        <h1>{{ session.display_course_name }}</h1>
+
+        {% if session.course.title_arabic %}
+            <p dir="rtl">{{ session.course.title_arabic }}</p>
+        {% endif %}
+
+        <div class="course-details">
+            <div>
+                <small>Camp / المعسكر</small>
+                <strong>{{ session.camp|default:"To be confirmed" }}</strong>
+            </div>
+
+            <div>
+                <small>Date / التاريخ</small>
+                <strong>{{ date_text }}</strong>
+            </div>
+
+            <div>
+                <small>Reference</small>
+                <strong>{{ session.display_reference }}</strong>
+            </div>
+
+            <div>
+                <small>Instructor / المدرب</small>
+                <strong>
+                    {% for instructor in session.instructors.all %}
+                        {{ instructor.name_english|upper }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        To be confirmed
+                    {% endfor %}
+                </strong>
+            </div>
+        </div>
+    </section>
+
+    {% if success %}
+        <section class="message-card success-card">
+            <h2>Registration received ✓</h2>
+
+            {% if already_registered %}
+                <p>
+                    This Emirates ID is already registered for this course.
+                    You do not need to submit the form again.
+                </p>
+            {% else %}
+                <p>
+                    Your information was submitted successfully.
+                </p>
+            {% endif %}
+        </section>
+    {% endif %}
+
+    {% if registration_open %}
+        <section class="form-card">
+            <h2>Student information</h2>
+
+            <p class="form-intro">
+                The course, camp, date and instructor are already
+                connected to this QR code.
+            </p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                            <ul class="field-errors">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button class="submit-button" type="submit">
+                    Submit Registration
+                </button>
+            </form>
+        </section>
+    {% else %}
+        <section class="message-card closed-card">
+            <h2>Registration is currently closed</h2>
+            <p>
+                Please contact the course instructor if you believe
+                registration should be open.
+            </p>
+        </section>
+    {% endif %}
+</main>
+
+<!-- IQARUS_AUTOMATIC_EID_FORMATTING -->
+<!-- IQARUS_EID_CONSTRAINTS -->
+<script>
+(function () {
+    "use strict";
+
+    const eidInput = document.getElementById("id_emirates_id");
+
+    if (!eidInput) {
+        return;
+    }
+
+    const registrationForm = eidInput.closest("form");
+    const currentYear = new Date().getFullYear();
+
+    function extractDigits(value) {
+        return value
+            .replace(/\D/g, "")
+            .slice(0, 15);
+    }
+
+    function formatEmiratesId(value) {
+        const digits = extractDigits(value);
+
+        const groups = [
+            digits.slice(0, 3),
+            digits.slice(3, 7),
+            digits.slice(7, 14),
+            digits.slice(14, 15)
+        ].filter(function (group) {
+            return group.length > 0;
+        });
+
+        return groups.join("-");
+    }
+
+    function getValidationMessage() {
+        const digits = extractDigits(eidInput.value);
+
+        if (digits.length !== 15) {
+            return "Enter all 15 digits of the Emirates ID.";
+        }
+
+        if (digits.slice(0, 3) !== "784") {
+            return "The Emirates ID must begin with 784.";
+        }
+
+        const birthYearText = digits.slice(3, 7);
+        const birthYear = Number(birthYearText);
+
+        if (
+            birthYearText.length !== 4
+            || !Number.isInteger(birthYear)
+            || birthYear < 1900
+            || birthYear > currentYear
+        ) {
+            return (
+                "The second section must be the four-digit "
+                + "year of birth between 1900 and "
+                + currentYear
+                + "."
+            );
+        }
+
+        return "";
+    }
+
+    function validateEmiratesId(showMessage) {
+        const message = getValidationMessage();
+
+        eidInput.setCustomValidity(message);
+
+        if (message && showMessage) {
+            eidInput.reportValidity();
+        }
+
+        return message === "";
+    }
+
+    eidInput.maxLength = 18;
+    eidInput.inputMode = "numeric";
+    eidInput.title = (
+        "Required format: 784-YYYY-XXXXXXX-X. "
+        + "YYYY must be the year of birth."
+    );
+
+    eidInput.addEventListener("focus", function () {
+        if (!extractDigits(eidInput.value)) {
+            eidInput.value = "784-";
+        }
+    });
+
+    eidInput.addEventListener("input", function () {
+        eidInput.value = formatEmiratesId(eidInput.value);
+        eidInput.setCustomValidity("");
+    });
+
+    eidInput.addEventListener("blur", function () {
+        eidInput.value = formatEmiratesId(eidInput.value);
+
+        if (extractDigits(eidInput.value)) {
+            validateEmiratesId(false);
+        }
+    });
+
+    if (registrationForm) {
+        registrationForm.addEventListener("submit", function (event) {
+            eidInput.value = formatEmiratesId(eidInput.value);
+
+            if (!validateEmiratesId(true)) {
+                event.preventDefault();
+                eidInput.focus();
+            }
+        });
+    }
+
+    if (eidInput.value) {
+        eidInput.value = formatEmiratesId(eidInput.value);
+    }
+})();
+</script>
+
+</body>
+</html>

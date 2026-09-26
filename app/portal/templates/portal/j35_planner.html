@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}J35 Weekly Planner | IQARUS TMS{% endblock %}
+
+{% block content %}
+<style>
+/* Scoped J35 layout: compact, legible, and independent of other screens. */
+.j35 { --ink:#202b35; --muted:#65717d; --line:#dce3e8; --soft:#f5f7f8; --orange:#f47721; --orange-dark:#c95a0d; --green:#176b45; --green-bg:#e7f5ed; --blue:#1f5d96; --blue-bg:#eaf3fb; --red:#9e3029; --red-bg:#fbeceb; width:min(1440px,100%); margin:0 auto; color:var(--ink); }
+.j35 *,.j35 *::before,.j35 *::after { box-sizing:border-box; }
+.j35 h1,.j35 h2,.j35 h3,.j35 p { margin-top:0; }
+.j35 button,.j35 input,.j35 select,.j35 textarea { font:inherit; }
+.j35-button { display:inline-flex; min-height:34px; align-items:center; justify-content:center; gap:6px; padding:7px 11px; color:#fff; background:var(--orange); border:1px solid var(--orange); border-radius:7px; box-shadow:0 2px 0 rgba(118,48,8,.08); cursor:pointer; font-size:.83rem; font-weight:800; line-height:1.1; text-decoration:none; transition:background .16s ease,border-color .16s ease; }
+.j35-button:hover { background:var(--orange-dark); border-color:var(--orange-dark); }
+.j35-button:focus-visible,.j35 a:focus-visible,.j35 input:focus-visible,.j35 select:focus-visible,.j35 textarea:focus-visible,.j35 summary:focus-visible { outline:3px solid rgba(244,119,33,.28); outline-offset:2px; }
+.j35-button.secondary { color:#34414d; background:#fff; border-color:#c9d2d9; box-shadow:none; }
+.j35-button.secondary:hover { color:var(--orange-dark); border-color:var(--orange); background:#fff8f3; }
+.j35-button.positive { background:var(--green); border-color:var(--green); }
+.j35-button.positive:hover { background:#105639; border-color:#105639; }
+.j35-button.quiet { min-height:30px; padding:5px 8px; font-size:.76rem; }
+.j35-control { width:100%; min-height:34px; padding:7px 9px; color:#25313c; background:#fff; border:1px solid #cbd4db; border-radius:6px; font-size:.84rem; line-height:1.25; }
+.j35-control:focus { border-color:var(--orange); outline:3px solid rgba(244,119,33,.12); }
+.j35 textarea.j35-control { min-height:62px; resize:vertical; }
+.j35-label { display:grid; gap:4px; min-width:0; color:#52606c; font-size:.72rem; font-weight:800; letter-spacing:.025em; text-transform:uppercase; }
+.j35-label > span { overflow-wrap:anywhere; }
+.j35-eyebrow { margin-bottom:4px; color:var(--orange-dark); font-size:.7rem; font-weight:850; letter-spacing:.13em; text-transform:uppercase; }
+.j35-muted { color:var(--muted); }
+.j35-status,.j35-chip { display:inline-flex; width:max-content; max-width:100%; align-items:center; min-height:23px; padding:3px 7px; border-radius:999px; font-size:.73rem; font-weight:800; line-height:1.15; }
+.j35-status { color:#44515d; background:#edf0f2; }
+.j35-status.open,.j35-status.published,.j35-status.confirmed,.j35-chip.good { color:var(--green); background:var(--green-bg); }
+.j35-status.draft,.j35-status.proposed,.j35-status.pending,.j35-chip.info { color:var(--blue); background:var(--blue-bg); }
+.j35-status.cancelled,.j35-chip.warning { color:var(--red); background:var(--red-bg); }
+.j35-hero { display:flex; align-items:flex-end; justify-content:space-between; gap:22px; margin-bottom:12px; }
+.j35-hero h1 { margin-bottom:5px; font-size:clamp(1.5rem,2.7vw,2.05rem); letter-spacing:-.035em; }
+.j35-lead { max-width:690px; margin-bottom:0; color:var(--muted); font-size:.91rem; line-height:1.42; }
+.j35-period { display:grid; gap:7px; justify-items:end; min-width:315px; }
+.j35-period-label { color:var(--muted); font-size:.71rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.j35-period-range { font-size:.91rem; font-weight:850; white-space:nowrap; }
+.j35-period-actions { display:flex; gap:6px; }
+.j35-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; overflow:hidden; margin-bottom:12px; background:var(--line); border:1px solid var(--line); border-radius:9px; }
+.j35-step { min-height:54px; padding:9px 12px; color:inherit; background:#fff; text-decoration:none; }
+.j35-step:hover { background:#fff8f3; }
+.j35-step-number { display:inline-flex; width:19px; height:19px; align-items:center; justify-content:center; margin-right:6px; color:#fff; background:var(--orange); border-radius:50%; font-size:.68rem; font-weight:900; }
+.j35-step strong { font-size:.82rem; }
+.j35-step span { display:block; margin:3px 0 0 25px; color:var(--muted); font-size:.72rem; line-height:1.25; }
+.j35-grid { display:grid; grid-template-columns:minmax(0,1.02fr) minmax(340px,.98fr); gap:12px; align-items:start; }
+.j35-stack { display:grid; gap:12px; min-width:0; }
+.j35-panel { overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 8px 24px rgba(23,35,46,.055); }
+.j35-panel-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:11px 13px 9px; border-bottom:1px solid #edf0f2; }
+.j35-panel-header h2 { margin-bottom:2px; font-size:1rem; letter-spacing:-.012em; }
+.j35-panel-header p { margin-bottom:0; color:var(--muted); font-size:.76rem; line-height:1.35; }
+.j35-count { flex:0 0 auto; padding:4px 8px; color:var(--orange-dark); background:#fff2e9; border-radius:999px; font-size:.71rem; font-weight:850; white-space:nowrap; }
+.j35-camp-list { display:grid; }
+.j35-camp-row { display:grid; grid-template-columns:minmax(122px,1fr) minmax(112px,.82fr) minmax(104px,.72fr) auto; gap:8px; align-items:center; min-height:58px; padding:8px 12px; border-bottom:1px solid #edf0f2; }
+.j35-camp-row:last-child { border-bottom:0; }
+.j35-camp-name { display:block; font-size:.84rem; font-weight:850; line-height:1.2; overflow-wrap:anywhere; }
+.j35-camp-meta { display:block; margin-top:2px; color:var(--muted); font-size:.71rem; line-height:1.26; overflow-wrap:anywhere; }
+.j35-recency { display:grid; gap:2px; }
+.j35-recency strong { color:#33414e; font-size:.78rem; }
+.j35-recency small { color:var(--muted); font-size:.7rem; }
+.j35-recency.is-due strong { color:var(--red); }
+.j35-empty { margin:0; padding:14px; color:var(--muted); font-size:.84rem; line-height:1.4; }
+.j35-need-form { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:11px 13px 13px; }
+.j35-need-form .wide { grid-column:span 2; }
+.j35-need-form label > select,.j35-need-form label > input,.j35-need-form label > textarea { width:100%; min-height:34px; padding:7px 9px; color:#25313c; background:#fff; border:1px solid #cbd4db; border-radius:6px; font-size:.84rem; line-height:1.25; }
+.j35-need-form label > textarea { min-height:62px; resize:vertical; }
+.j35-form-actions { display:flex; align-items:end; justify-content:flex-end; gap:7px; }
+.j35-form-hint { margin:0; color:var(--muted); font-size:.71rem; line-height:1.35; }
+.j35-proposal-list { display:grid; gap:10px; padding:11px 12px 12px; background:#fafbfc; }
+.j35-proposal { overflow:hidden; background:#fff; border:1px solid #dce4e9; border-radius:9px; }
+.j35-proposal-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:10px 11px 8px; border-bottom:1px solid #edf0f2; }
+.j35-proposal-title { margin:0 0 3px; font-size:.91rem; line-height:1.22; overflow-wrap:anywhere; }
+.j35-proposal-meta { margin:0; color:var(--muted); font-size:.74rem; line-height:1.35; overflow-wrap:anywhere; }
+.j35-proposal-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(186px,.6fr); gap:10px; padding:10px 11px 11px; }
+.j35-recommendation-heading { display:flex; align-items:center; justify-content:space-between; gap:7px; margin-bottom:6px; }
+.j35-recommendation-heading h3 { margin:0; font-size:.77rem; letter-spacing:.035em; text-transform:uppercase; }
+.j35-recommendation-list { display:grid; gap:5px; }
+.j35-recommendation { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:7px; min-height:34px; padding:6px 7px; background:#f7f9fa; border:1px solid #e4e9ec; border-radius:6px; cursor:pointer; }
+.j35-recommendation:has(input:checked) { background:#fff7f1; border-color:#f2b68e; }
+.j35-recommendation input { width:15px; height:15px; margin:0; accent-color:var(--orange); }
+.j35-recommendation-name { min-width:0; font-size:.78rem; font-weight:800; line-height:1.18; overflow-wrap:anywhere; }
+.j35-recommendation-note { display:block; margin-top:2px; color:var(--muted); font-size:.68rem; font-weight:500; line-height:1.18; }
+.j35-score { color:var(--green); font-size:.68rem; font-weight:850; text-align:right; white-space:nowrap; }
+.j35-insight { display:grid; align-content:start; gap:7px; padding:8px; color:#46525c; background:#f3f7fa; border:1px solid #dce8ef; border-radius:7px; }
+.j35-insight h3 { margin:0; color:#3a596b; font-size:.74rem; letter-spacing:.04em; text-transform:uppercase; }
+.j35-insight p { margin:0; font-size:.72rem; line-height:1.35; overflow-wrap:anywhere; }
+.j35-conflicts { margin:0; padding:0; list-style:none; }
+.j35-conflicts li { margin:0 0 4px; color:var(--red); font-size:.7rem; line-height:1.3; }
+.j35-confirm-form { display:grid; gap:8px; }
+.j35-confirm-form .j35-label { font-size:.68rem; }
+.j35-confirm-form textarea { min-height:48px; }
+.j35-confirm-actions { display:flex; align-items:center; justify-content:space-between; gap:7px; }
+.j35-confirm-actions .j35-form-hint { max-width:155px; }
+.j35-advanced { border-top:1px solid #edf0f2; }
+.j35-advanced summary { padding:10px 13px; color:#4d5a65; cursor:pointer; font-size:.8rem; font-weight:850; }
+.j35-advanced[open] summary { color:var(--orange-dark); border-bottom:1px solid #edf0f2; }
+.j35-direct-form { display:grid; grid-template-columns:minmax(170px,.88fr) minmax(200px,1.12fr) minmax(175px,.85fr); gap:9px; padding:11px 13px 13px; }
+.j35-instructor-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; max-height:160px; overflow:auto; padding:1px; }
+.j35-instructor-choice { display:flex; align-items:center; min-width:0; gap:6px; padding:5px 6px; border:1px solid #e2e7ea; border-radius:6px; color:#33404b; cursor:pointer; font-size:.76rem; line-height:1.2; }
+.j35-instructor-choice input { width:14px; height:14px; flex:0 0 auto; margin:0; accent-color:var(--orange); }
+.j35-instructor-choice span { min-width:0; overflow-wrap:anywhere; }
+.j35-instructor-choice small { display:block; color:var(--muted); font-size:.66rem; }
+.j35-direct-actions { display:grid; align-content:end; gap:7px; }
+.j35-filter-form { display:grid; grid-template-columns:repeat(5,minmax(120px,1fr)) auto; gap:8px; align-items:end; padding:11px 13px 13px; }
+.j35-filter-form .activity { min-width:160px; }
+.j35-schedule { margin-top:12px; }
+.j35-schedule-head { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin:0 0 8px; }
+.j35-schedule-head h2 { margin-bottom:2px; font-size:1.04rem; }
+.j35-schedule-head p { margin-bottom:0; color:var(--muted); font-size:.77rem; }
+.j35-week-list { display:grid; gap:9px; }
+.j35-week { overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:9px; box-shadow:0 4px 16px rgba(23,35,46,.035); }
+.j35-week-head { display:flex; align-items:center; justify-content:space-between; gap:9px; padding:9px 12px; background:#f7f9fa; border-bottom:1px solid #e6ebee; }
+.j35-week-head h3 { margin:0; font-size:.87rem; }
+.j35-week-head span { color:var(--muted); font-size:.72rem; }
+.j35-allocation { display:grid; grid-template-columns:minmax(140px,.8fr) minmax(220px,1.35fr) minmax(135px,.72fr) minmax(105px,.5fr) auto; gap:9px; align-items:center; min-height:49px; padding:8px 12px; border-bottom:1px solid #edf0f2; }
+.j35-allocation:last-child { border-bottom:0; }
+.j35-allocation strong { display:block; font-size:.79rem; line-height:1.25; overflow-wrap:anywhere; }
+.j35-allocation small { display:block; margin-top:2px; color:var(--muted); font-size:.69rem; line-height:1.24; overflow-wrap:anywhere; }
+.j35-allocation-date { font-size:.75rem; font-weight:700; line-height:1.28; }
+.j35-edit { justify-self:end; }
+.j35-edit summary { color:var(--orange-dark); cursor:pointer; font-size:.76rem; font-weight:850; white-space:nowrap; }
+.j35-edit-form { display:grid; grid-template-columns:repeat(3,minmax(150px,1fr)); gap:8px; width:min(780px,86vw); margin-top:8px; padding:9px; background:#f7f9fa; border:1px solid #dfe6ea; border-radius:8px; }
+.j35-edit-form .wide { grid-column:span 2; }
+.j35-edit-form .j35-form-actions { justify-content:start; }
+.j35-empty-schedule { padding:11px 12px; color:var(--muted); font-size:.8rem; }
+.j35-only { max-width:720px; margin-right:auto; margin-left:auto; }
+@media (max-width:1080px) { .j35-grid { grid-template-columns:1fr; } .j35-proposal-body { grid-template-columns:minmax(0,1fr) minmax(230px,.62fr); } .j35-filter-form { grid-template-columns:repeat(3,minmax(150px,1fr)); } }
+@media (max-width:800px) { .j35-hero { display:grid; align-items:start; } .j35-period { justify-items:start; min-width:0; } .j35-steps { grid-template-columns:1fr; } .j35-camp-row { grid-template-columns:1fr 1fr auto; } .j35-camp-row > :nth-child(2) { display:none; } .j35-direct-form { grid-template-columns:1fr 1fr; } .j35-direct-form .j35-direct-actions { grid-column:span 2; } .j35-allocation { grid-template-columns:minmax(135px,.8fr) minmax(0,1.25fr) minmax(105px,.58fr) auto; } .j35-allocation > :nth-child(4) { display:none; } }
+@media (max-width:600px) { .j35-need-form,.j35-proposal-body,.j35-direct-form,.j35-edit-form { grid-template-columns:1fr; } .j35-need-form .wide,.j35-edit-form .wide,.j35-direct-form .j35-direct-actions { grid-column:auto; } .j35-camp-row { grid-template-columns:minmax(0,1fr) auto; } .j35-camp-row > :nth-child(3) { display:none; } .j35-proposal-head { display:grid; } .j35-filter-form { grid-template-columns:1fr; } .j35-instructor-grid { grid-template-columns:1fr; } .j35-allocation { grid-template-columns:1fr auto; gap:5px 10px; } .j35-allocation > :nth-child(3) { grid-column:1; } .j35-edit { grid-column:2; grid-row:1; } .j35-edit-form { width:min(90vw,540px); } }
+</style>
+
+<section class="j35">
+  <header class="j35-hero">
+    <div>
+      <p class="j35-eyebrow">J35 Planning</p>
+      <h1>Weekly Instructor Planner</h1>
+      <p class="j35-lead">Start with camps that need contact or training, make a fair allocation, then confirm the plan and notify the selected trainers.</p>
+    </div>
+    <div class="j35-period" aria-label="Planning period">
+      <span class="j35-period-label">Four-week planning window</span>
+      <strong class="j35-period-range">{{ start|date:"d M" }} – {{ next_start|date:"d M Y" }}</strong>
+      <nav class="j35-period-actions" aria-label="Change planning period">
+        <a class="j35-button secondary" href="?start={{ previous_start|date:'Y-m-d' }}">← Previous</a>
+        <a class="j35-button secondary" href="?start={{ next_start|date:'Y-m-d' }}">Next →</a>
+      </nav>
+    </div>
+  </header>
+
+  {% if can_manage %}
+    <nav class="j35-steps" aria-label="J35 planning workflow">
+      <a class="j35-step" href="#j35-demand-queue"><strong><span class="j35-step-number">1</span>Identify the need</strong><span>Client request or a camp due for contact.</span></a>
+      <a class="j35-step" href="#j35-proposals"><strong><span class="j35-step-number">2</span>Adjust the allocation</strong><span>Use the fair recommendation or choose manually.</span></a>
+      <a class="j35-step" href="#j35-schedule"><strong><span class="j35-step-number">3</span>Confirm and notify</strong><span>Confirmed trainers appear in the weekly schedule.</span></a>
+    </nav>
+
+    <div class="j35-grid">
+      <div class="j35-stack">
+        <section class="j35-panel" id="j35-demand-queue">
+          <header class="j35-panel-header"><div><h2>Camp demand queue</h2><p>Use recency and client requests to decide which camps to plan this week.</p></div><span class="j35-count">{{ camp_pipeline|length }} camps</span></header>
+          <div class="j35-camp-list">
+            {% for item in camp_pipeline %}
+              <article class="j35-camp-row">
+                <div><strong class="j35-camp-name">{{ item.camp.name }}</strong>{% if item.camp.area %}<span class="j35-camp-meta">{{ item.camp.area }}</span>{% endif %}</div>
+                <div><strong class="j35-camp-meta">Point of contact</strong><span class="j35-camp-meta">{{ item.primary_contact|default:"Not recorded" }}</span></div>
+                <div class="j35-recency {% if item.recency_days and item.recency_days >= 21 %}is-due{% endif %}"><strong>{% if item.recency_days is not None %}{{ item.recency_days }} days ago{% else %}No contact date{% endif %}</strong><small>{% if item.last_contact_at %}Last contact {{ item.last_contact_at|date:"d M Y" }}{% elif item.last_course_date %}Last course {{ item.last_course_date|date:"d M Y" }}{% else %}Needs review{% endif %}</small></div>
+                <div>{% if item.open_need %}<span class="j35-status pending">Need waiting</span>{% else %}<button class="j35-button secondary quiet" type="button" data-j35-camp="{{ item.camp.id }}">Plan need</button>{% endif %}</div>
+              </article>
+            {% empty %}
+              <p class="j35-empty">No camp contacts have been imported yet. You can still create a training need below.</p>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="j35-panel" id="j35-new-need">
+          <header class="j35-panel-header"><div><h2>Create a training need</h2><p>Record a client request or outreach call before allocating trainers.</p></div></header>
+          <form class="j35-need-form" method="post">
+            {% csrf_token %}<input type="hidden" name="action" value="create_need">
+            <label class="j35-label"><span>Camp</span><select class="j35-control" name="camp_id" id="j35-need-camp" required><option value="">Select camp</option>{% for camp in camps %}<option value="{{ camp.id }}">{{ camp.name }}{% if camp.area %} · {{ camp.area }}{% endif %}</option>{% endfor %}</select></label>
+            <label class="j35-label"><span>Training</span><select class="j35-control" name="course_id" required><option value="">Select training</option>{% for course in courses %}<option value="{{ course.id }}">{{ course.title_english }}{% if course.code %} · {{ course.code }}{% endif %}</option>{% empty %}<option value="" disabled>Use an existing course session below</option>{% endfor %}</select></label>
+            <label class="j35-label"><span>Point of contact <em class="j35-muted">(optional)</em></span><select class="j35-control" name="contact_id" id="j35-need-contact"><option value="">Use camp contact later</option>{% for contact in contacts %}<option value="{{ contact.id }}" data-j35-contact-camp="{{ contact.camp_id }}">{{ contact.name }} · {{ contact.camp.name }}</option>{% endfor %}</select></label>
+            <label class="j35-label"><span>Start date</span><input class="j35-control" type="date" name="start_date" value="{{ start|date:'Y-m-d' }}" required></label>
+            <label class="j35-label"><span>End date</span><input class="j35-control" type="date" name="end_date" value="{{ start|date:'Y-m-d' }}" required></label>
+            <label class="j35-label"><span>Why now?</span><select class="j35-control" name="request_type"><option value="client_request">Client requested training</option><option value="outreach">Camp follow-up / outreach</option><option value="recurring">Recurring programme</option><option value="other">Other operational need</option></select></label>
+            <label class="j35-label"><span>Priority</span><select class="j35-control" name="priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></label>
+            <label class="j35-label"><span>Trainers needed</span><input class="j35-control" type="number" name="required_instructors" min="1" max="12" value="1"></label>
+            <label class="j35-label"><span>Expected capacity <em class="j35-muted">(optional)</em></span><input class="j35-control" type="number" name="expected_capacity" min="1" max="500"></label>
+            <label class="j35-label"><span>Preferred team <em class="j35-muted">(optional)</em></span><select class="j35-control" name="preferred_team"><option value="">Any team</option>{% for team in teams %}<option value="{{ team.id }}">{{ team.name }}</option>{% endfor %}</select></label>
+            <label class="j35-label"><span>Required position <em class="j35-muted">(optional)</em></span><select class="j35-control" name="required_role"><option value="">Any position</option>{% for role in roles %}<option value="{{ role.id }}">{{ role.name }}</option>{% endfor %}</select></label>
+            <label class="j35-label wide"><span>Notes for the planner</span><textarea class="j35-control" name="notes" maxlength="2000" placeholder="Client request, special requirements, or why this camp is being contacted."></textarea></label>
+            <div class="j35-form-actions wide"><p class="j35-form-hint">The need stays editable until you confirm the trainer allocation.</p><button class="j35-button" type="submit">Create need →</button></div>
+          </form>
+        </section>
+
+        <section class="j35-panel">
+          <details class="j35-advanced">
+            <summary>Manage camp points of contact</summary>
+            <form class="j35-need-form" method="post">
+              {% csrf_token %}<input type="hidden" name="action" value="create_contact">
+              <label class="j35-label"><span>Camp</span><select class="j35-control" name="camp_id" required><option value="">Select camp</option>{% for camp in camps %}<option value="{{ camp.id }}">{{ camp.name }}</option>{% endfor %}</select></label>
+              <label class="j35-label"><span>Contact name</span><input class="j35-control" name="name" maxlength="200" required></label>
+              <label class="j35-label"><span>Position <em class="j35-muted">(optional)</em></span><input class="j35-control" name="position" maxlength="150"></label>
+              <label class="j35-label"><span>Phone <em class="j35-muted">(optional)</em></span><input class="j35-control" name="phone" maxlength="80"></label>
+              <label class="j35-label"><span>Email <em class="j35-muted">(optional)</em></span><input class="j35-control" type="email" name="email" maxlength="254"></label>
+              <label class="j35-label"><span>Primary contact</span><span><input type="checkbox" name="is_primary" value="on"> Use as the camp's main contact</span></label>
+              <label class="j35-label"><span>Active</span><span><input type="checkbox" name="active" value="on" checked> Available for planning</span></label>
+              <label class="j35-label wide"><span>Contact notes <em class="j35-muted">(optional)</em></span><textarea class="j35-control" name="notes" maxlength="2000"></textarea></label>
+              <div class="j35-form-actions wide"><button class="j35-button secondary" type="submit">Add contact</button></div>
+            </form>
+            {% if all_contacts %}
+              <div class="j35-proposal-list">
+                {% for contact in all_contacts %}
+                  <details class="j35-proposal">
+                    <summary class="j35-advanced">{{ contact.camp.name }} · {{ contact.name }}{% if contact.is_primary %} · Primary{% endif %}</summary>
+                    <form class="j35-need-form" method="post">
+                      {% csrf_token %}<input type="hidden" name="action" value="update_contact"><input type="hidden" name="contact_id" value="{{ contact.id }}"><input type="hidden" name="camp_id" value="{{ contact.camp_id }}">
+                      <label class="j35-label"><span>Contact name</span><input class="j35-control" name="name" value="{{ contact.name }}" maxlength="200" required></label>
+                      <label class="j35-label"><span>Position</span><input class="j35-control" name="position" value="{{ contact.position }}" maxlength="150"></label>
+                      <label class="j35-label"><span>Phone</span><input class="j35-control" name="phone" value="{{ contact.phone }}" maxlength="80"></label>
+                      <label class="j35-label"><span>Email</span><input class="j35-control" type="email" name="email" value="{{ contact.email }}" maxlength="254"></label>
+                      <label class="j35-label"><span>Primary contact</span><span><input type="checkbox" name="is_primary" value="on" {% if contact.is_primary %}checked{% endif %}> Use as the camp's main contact</span></label>
+                      <label class="j35-label"><span>Active</span><span><input type="checkbox" name="active" value="on" {% if contact.active %}checked{% endif %}> Available for planning</span></label>
+                      <label class="j35-label wide"><span>Contact notes</span><textarea class="j35-control" name="notes" maxlength="2000">{{ contact.notes }}</textarea></label>
+                      <div class="j35-form-actions wide"><button class="j35-button secondary" type="submit">Save contact</button></div>
+                    </form>
+                  </details>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </details>
+        </section>
+      </div>
+
+      <section class="j35-panel" id="j35-proposals">
+        <header class="j35-panel-header"><div><h2>Allocation proposals</h2><p>Recommendations balance current-week workload, recent work, roles, and conflicts. You always have the final decision.</p></div><span class="j35-count">{{ planner_proposals|length }} awaiting confirmation</span></header>
+        <div class="j35-proposal-list">
+          {% for proposal in planner_proposals %}
+            <article class="j35-proposal">
+              <header class="j35-proposal-head"><div><h3 class="j35-proposal-title">{{ proposal.course.title_english|default:"Training need" }}</h3><p class="j35-proposal-meta">{{ proposal.camp.name|default:"Camp not set" }}{% if proposal.camp.area %} · {{ proposal.camp.area }}{% endif %}{% if proposal.requested_start_date %} · {{ proposal.requested_start_date|date:"D d M" }}{% endif %}{% if proposal.requested_end_date and proposal.requested_end_date != proposal.requested_start_date %} – {{ proposal.requested_end_date|date:"D d M" }}{% endif %}</p></div><span class="j35-status {{ proposal.status|default:'pending' }}">{{ proposal.get_status_display|default:proposal.status|default:"Awaiting plan" }}</span></header>
+              <div class="j35-proposal-body">
+                <div>
+                  <div class="j35-recommendation-heading"><h3>Recommended trainers</h3>{% if proposal.priority %}<span class="j35-chip {% if proposal.priority == 'urgent' %}warning{% else %}info{% endif %}">{{ proposal.priority|title }} priority</span>{% endif %}</div>
+                  <form class="j35-confirm-form" method="post">
+                    {% csrf_token %}<input type="hidden" name="action" value="confirm_need"><input type="hidden" name="need_id" value="{{ proposal.public_id }}">
+                    <div class="j35-recommendation-list">
+                      {% for recommendation in proposal.recommendations %}
+                        {% if recommendation.instructor %}
+                          <label class="j35-recommendation"><input type="checkbox" name="instructor_ids" value="{{ recommendation.instructor.id }}" {% if recommendation.instructor.id in proposal.suggested_ids %}checked{% endif %}><span class="j35-recommendation-name">{{ recommendation.instructor.name_english }}{% if recommendation.instructor.team %}<small class="j35-recommendation-note">{{ recommendation.instructor.team.name }}{% if recommendation.reason %} · {{ recommendation.reason }}{% endif %}</small>{% elif recommendation.reason %}<small class="j35-recommendation-note">{{ recommendation.reason }}</small>{% endif %}</span>{% if recommendation.score is not None %}<span class="j35-score">{{ recommendation.score }}</span>{% endif %}</label>
+                        {% else %}
+                          <label class="j35-recommendation"><input type="checkbox" name="instructor_ids" value="{{ recommendation.id }}" {% if recommendation.id in proposal.suggested_ids %}checked{% endif %}><span class="j35-recommendation-name">{{ recommendation.name_english|default:recommendation }}{% if recommendation.team %}<small class="j35-recommendation-note">{{ recommendation.team.name }}{% if recommendation.reason %} · {{ recommendation.reason }}{% endif %}</small>{% elif recommendation.reason %}<small class="j35-recommendation-note">{{ recommendation.reason }}</small>{% endif %}</span>{% if recommendation.score is not None %}<span class="j35-score">{{ recommendation.score }}</span>{% endif %}</label>
+                        {% endif %}
+                      {% empty %}
+                        <p class="j35-empty">No automatic recommendation is available. Use the direct course allocation section below.</p>
+                      {% endfor %}
+                    </div>
+                    <label class="j35-label"><span>Manual override reason <em class="j35-muted">(optional)</em></span><textarea class="j35-control" name="override_reason" maxlength="1000" placeholder="For example: client requested a specific trainer, travel constraint, or operational change."></textarea></label>
+                    <div class="j35-confirm-actions"><p class="j35-form-hint">Confirmation records your decision and sends the trainer notification.</p><button class="j35-button positive" type="submit">Confirm &amp; notify</button></div>
+                  </form>
+                </div>
+                <aside class="j35-insight"><h3>Planning insight</h3>{% if proposal.weekly_workload %}<p>{{ proposal.weekly_workload }} recommended allocation{{ proposal.weekly_workload|pluralize }} already scheduled this week.</p>{% else %}<p>Selections are checked against workload and overlapping allocations before confirmation.</p>{% endif %}{% if proposal.conflicts %}<ul class="j35-conflicts">{% for conflict in proposal.conflicts %}<li>{{ conflict.instructor.name_english }}{% if conflict.reasons %}: {{ conflict.reasons|join:"; " }}{% endif %}</li>{% endfor %}</ul>{% else %}<span class="j35-chip good">No current conflicts</span>{% endif %}{% if proposal.notes %}<p><strong>Need:</strong> {{ proposal.notes }}</p>{% endif %}</aside>
+              </div>
+              <details class="j35-advanced">
+                <summary>Edit this training need</summary>
+                <form class="j35-need-form" method="post">
+                  {% csrf_token %}<input type="hidden" name="action" value="update_need"><input type="hidden" name="need_id" value="{{ proposal.public_id }}">
+                  <label class="j35-label"><span>Camp</span><select class="j35-control" name="camp_id">{% for camp in camps %}<option value="{{ camp.id }}" {% if proposal.camp_id == camp.id %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select></label>
+                  <label class="j35-label"><span>Point of contact</span><select class="j35-control" name="contact_id"><option value="">No contact selected</option>{% for contact in contacts %}<option value="{{ contact.id }}" {% if proposal.contact_id == contact.id %}selected{% endif %}>{{ contact.name }} · {{ contact.camp.name }}</option>{% endfor %}</select></label>
+                  <label class="j35-label"><span>Training</span><select class="j35-control" name="course_id">{% for course in courses %}<option value="{{ course.id }}" {% if proposal.course_id == course.id %}selected{% endif %}>{{ course.title_english }}</option>{% endfor %}</select></label>
+                  <label class="j35-label"><span>Start date</span><input class="j35-control" type="date" name="start_date" value="{{ proposal.requested_start_date|date:'Y-m-d' }}"></label>
+                  <label class="j35-label"><span>End date</span><input class="j35-control" type="date" name="end_date" value="{{ proposal.requested_end_date|date:'Y-m-d' }}"></label>
+                  <label class="j35-label"><span>Priority</span><select class="j35-control" name="priority"><option value="normal" {% if proposal.priority == 'normal' %}selected{% endif %}>Normal</option><option value="high" {% if proposal.priority == 'high' %}selected{% endif %}>High</option><option value="urgent" {% if proposal.priority == 'urgent' %}selected{% endif %}>Urgent</option></select></label>
+                  <label class="j35-label"><span>Request type</span><select class="j35-control" name="request_type"><option value="client_request" {% if proposal.source == 'request' %}selected{% endif %}>Client requested training</option><option value="outreach" {% if proposal.source == 'outreach' %}selected{% endif %}>Camp follow-up / outreach</option></select></label>
+                  <label class="j35-label"><span>Trainers needed</span><input class="j35-control" type="number" name="required_instructors" min="1" max="12" value="{{ proposal.required_instructors }}"></label>
+                  <label class="j35-label"><span>Expected capacity</span><input class="j35-control" type="number" name="expected_capacity" min="1" max="500" value="{{ proposal.expected_capacity }}"></label>
+                  <label class="j35-label"><span>Preferred team</span><select class="j35-control" name="preferred_team"><option value="">Any team</option>{% for team in teams %}<option value="{{ team.id }}" {% if proposal.preferred_team_id == team.id %}selected{% endif %}>{{ team.name }}</option>{% endfor %}</select></label>
+                  <label class="j35-label"><span>Required position</span><select class="j35-control" name="required_role"><option value="">Any position</option>{% for role in roles %}<option value="{{ role.id }}" {% if proposal.required_role_id == role.id %}selected{% endif %}>{{ role.name }}</option>{% endfor %}</select></label>
+                  <label class="j35-label wide"><span>Notes</span><textarea class="j35-control" name="notes" maxlength="2000">{{ proposal.notes }}</textarea></label>
+                  <div class="j35-form-actions wide"><button class="j35-button secondary" type="submit">Save changes</button></div>
+                </form>
+              </details>
+            </article>
+          {% empty %}
+            <p class="j35-empty">No training needs are waiting for allocation. Create one from a client request or choose a camp from the contact queue.</p>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+
+    <section class="j35-panel" style="margin-top:12px">
+      <details class="j35-advanced">
+        <summary>Allocate an already-created course directly</summary>
+        <form class="j35-direct-form" method="post">
+          {% csrf_token %}<input type="hidden" name="action" value="pipeline_create">
+          <label class="j35-label"><span>Course session</span><select class="j35-control" name="session_id" required><option value="">Select a course session</option>{% for course_session in pipeline_sessions %}<option value="{{ course_session.id }}">{{ course_session.planner_label }}</option>{% empty %}<option value="" disabled>No dated courses in this period</option>{% endfor %}</select></label>
+          <div class="j35-label"><span>Choose trainer(s)</span><div class="j35-instructor-grid" role="group" aria-label="Instructors for the selected course">{% for staff_member in instructors %}<label class="j35-instructor-choice"><input type="checkbox" name="instructor_ids" value="{{ staff_member.id }}"><span>{{ staff_member.name_english }}{% if staff_member.team %}<small>{{ staff_member.team.name }}</small>{% endif %}</span></label>{% empty %}<span class="j35-form-hint">No active trainers are available.</span>{% endfor %}</div></div>
+          <div class="j35-direct-actions"><label class="j35-label"><span>Save as</span><select class="j35-control" name="status"><option value="draft">Draft</option><option value="published">Published</option></select></label><input type="hidden" name="activity" value=""><input type="hidden" name="notes" value=""><button class="j35-button" type="submit">Save course plan</button></div>
+        </form>
+      </details>
+      <details class="j35-advanced">
+        <summary>Add an independent duty or absence</summary>
+        <form class="j35-need-form" method="post">
+          {% csrf_token %}<input type="hidden" name="action" value="create">
+          <label class="j35-label"><span>Instructor</span>{{ form.instructor }}</label><label class="j35-label"><span>Course session <em class="j35-muted">(optional)</em></span>{{ form.session }}</label><label class="j35-label"><span>Camp <em class="j35-muted">(optional)</em></span>{{ form.camp }}</label><label class="j35-label"><span>Activity</span>{{ form.activity }}</label><label class="j35-label"><span>Type</span><select class="j35-control" name="allocation_kind"><option value="leave">Leave</option><option value="admin">Administrative duty</option><option value="other" selected>Other duty</option></select></label><label class="j35-label"><span>Start</span>{{ form.start_date }}</label><label class="j35-label"><span>End</span>{{ form.end_date }}</label><label class="j35-label"><span>Status</span>{{ form.status }}</label><label class="j35-label wide"><span>Notes</span>{{ form.notes }}</label><label class="j35-label wide"><span>Override reason <em class="j35-muted">(only if dates deliberately overlap)</em></span><input class="j35-control" name="override_reason" maxlength="1000"></label><div class="j35-form-actions wide"><button class="j35-button" type="submit">Save independent duty</button></div>
+        </form>
+      </details>
+    </section>
+
+    <section class="j35-panel" style="margin-top:12px">
+      <details class="j35-advanced">
+        <summary>Filter the four-week schedule</summary>
+        <form class="j35-filter-form" method="get">
+          <input type="hidden" name="start" value="{{ start|date:'Y-m-d' }}">
+          <label class="j35-label"><span>Team</span><select class="j35-control" name="team"><option value="">All teams</option>{% for team in teams %}<option value="{{ team.id }}" {% if filters.team == team.id|stringformat:'s' %}selected{% endif %}>{{ team.name }}</option>{% endfor %}</select></label><label class="j35-label"><span>Trainer</span><select class="j35-control" name="instructor"><option value="">All trainers</option>{% for staff_member in instructors %}<option value="{{ staff_member.id }}" {% if filters.instructor == staff_member.id|stringformat:'s' %}selected{% endif %}>{{ staff_member.name_english }}</option>{% endfor %}</select></label><label class="j35-label"><span>Camp</span><select class="j35-control" name="camp"><option value="">All camps</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if filters.camp == camp.id|stringformat:'s' %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select></label><label class="j35-label activity"><span>Activity</span><input class="j35-control" name="activity" value="{{ filters.activity }}" maxlength="100"></label><label class="j35-label"><span>Status</span><select class="j35-control" name="status"><option value="">All statuses</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><button class="j35-button secondary" type="submit">Apply filters</button>
+        </form>
+      </details>
+    </section>
+  {% endif %}
+
+  <section class="j35-schedule {% if not can_manage %}j35-only{% endif %}" id="j35-schedule">
+    <header class="j35-schedule-head"><div><p class="j35-eyebrow">Confirmed planning</p><h2>{% if can_manage %}Four-week schedule{% else %}Your four-week schedule{% endif %}</h2><p>{% if can_manage %}Independent duties can be updated here; confirmed course plans remain managed through their J35 request. {% endif %}Every assignment is shown in date order.</p></div></header>
+    <div class="j35-week-list">
+      {% for week in weeks %}
+        <section class="j35-week">
+          <header class="j35-week-head"><h3>{{ week.start|date:"D d M" }} – {{ week.end|date:"D d M Y" }}</h3><span>{{ week.allocations|length }} allocation{{ week.allocations|length|pluralize }}</span></header>
+          {% for allocation in week.allocations %}
+            <article class="j35-allocation">
+              <div><strong>{{ allocation.instructor.name_english }}</strong>{% if allocation.instructor.team %}<small>{{ allocation.instructor.team.name }}</small>{% endif %}</div>
+              <div><strong>{{ allocation.activity }}</strong>{% if allocation.session %}<small>{{ allocation.session.course.title_english }}</small>{% elif allocation.notes %}<small>{{ allocation.notes }}</small>{% endif %}</div>
+              <div><strong>{{ allocation.camp.name|default:"No camp" }}</strong>{% if allocation.camp.area %}<small>{{ allocation.camp.area }}</small>{% endif %}</div>
+              <div><span class="j35-allocation-date">{{ allocation.start_date|date:"d M" }} – {{ allocation.end_date|date:"d M" }}</span><small><span class="j35-status {{ allocation.status }}">{{ allocation.get_status_display }}</span></small></div>
+              {% if can_manage and not allocation.training_need_id %}
+                <details class="j35-edit">
+                  <summary>Edit</summary>
+                  <form class="j35-edit-form" method="post">
+                    {% csrf_token %}<input type="hidden" name="action" value="update"><input type="hidden" name="allocation_id" value="{{ allocation.public_id }}">
+                    <label class="j35-label"><span>Instructor</span><select class="j35-control" name="instructor">{% for staff_member in instructors %}<option value="{{ staff_member.id }}" {% if allocation.instructor_id == staff_member.id %}selected{% endif %}>{{ staff_member.name_english }}</option>{% endfor %}</select></label><label class="j35-label"><span>Course session</span><select class="j35-control" name="session"><option value="">No linked course</option>{% for course_session in sessions %}<option value="{{ course_session.id }}" {% if allocation.session_id == course_session.id %}selected{% endif %}>{{ course_session.course.title_english }} · {{ course_session.start_date|date:"d M" }}</option>{% endfor %}</select></label><label class="j35-label"><span>Camp</span><select class="j35-control" name="camp"><option value="">No camp</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if allocation.camp_id == camp.id %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select></label><label class="j35-label"><span>Activity</span><input class="j35-control" name="activity" value="{{ allocation.activity }}" maxlength="200"></label><label class="j35-label"><span>Start</span><input class="j35-control" type="date" name="start_date" value="{{ allocation.start_date|date:'Y-m-d' }}"></label><label class="j35-label"><span>End</span><input class="j35-control" type="date" name="end_date" value="{{ allocation.end_date|date:'Y-m-d' }}"></label><label class="j35-label"><span>Status</span><select class="j35-control" name="status">{% for value,label in status_choices %}<option value="{{ value }}" {% if allocation.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><label class="j35-label wide"><span>Notes</span><textarea class="j35-control" name="notes" maxlength="2000">{{ allocation.notes }}</textarea></label><div class="j35-form-actions"><button class="j35-button" type="submit">Save</button>{% if allocation.status != 'cancelled' %}<button class="j35-button secondary" type="submit" onclick="this.form.querySelector('[name=action]').value='cancel'; return confirm('Cancel this allocation?');">Cancel</button>{% endif %}</div>
+                  </form>
+                </details>
+              {% elif allocation.training_need_id %}
+                <span class="j35-muted">Managed by confirmed J35 request</span>
+              {% endif %}
+            </article>
+          {% empty %}
+            <p class="j35-empty-schedule">No allocations in this week.</p>
+          {% endfor %}
+        </section>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+
+<script>
+(() => {
+  const campSelect = document.getElementById("j35-need-camp");
+  const needForm = document.getElementById("j35-new-need");
+  document.querySelectorAll("[data-j35-camp]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (campSelect) { campSelect.value = button.dataset.j35Camp || ""; campSelect.dispatchEvent(new Event("change", { bubbles:true })); }
+      if (needForm) { needForm.scrollIntoView({ behavior:"smooth", block:"center" }); }
+    });
+  });
+})();
+</script>
+{% endblock %}

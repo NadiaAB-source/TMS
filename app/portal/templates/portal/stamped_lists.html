@@ -1,0 +1,67 @@
+
+{% extends "base.html" %}
+
+{% block title %}Course Documents | IQARUS TMS{% endblock %}
+{% block page_title %}Course Documents{% endblock %}
+{% block header_title %}Course Documents{% endblock %}
+{% block workspace_title %}Course Documents{% endblock %}
+
+{% block content %}
+<style>
+.document-page{max-width:1180px;margin:0 auto;padding:24px 24px 44px}.document-back{color:#d9580b;font-weight:750;text-decoration:none}.document-heading{margin:15px 0}.document-heading h1{margin:5px 0}.document-heading p{color:#68717d}.document-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}.document-panel{background:#fff;border:1px solid #e1e5e9;border-radius:16px;padding:18px}.document-panel h2{margin-top:0}.document-upload{display:grid;gap:10px}.document-upload input[type=file],.document-upload textarea,.document-upload select{box-sizing:border-box;width:100%;border:1px solid #cfd5dc;border-radius:9px;padding:10px;font:inherit}.document-upload textarea{min-height:76px;resize:vertical}.document-button,.document-download{display:inline-flex;align-items:center;justify-content:center;border-radius:9px;padding:10px 15px;font-weight:750;text-decoration:none}.document-button{border:1px solid #f37321;background:#f37321;color:#fff;cursor:pointer}.document-download{border:1px solid #157551;background:#e8f7ef;color:#157551}.document-current{border-left:4px solid #157551}.document-history{display:grid;gap:8px}.document-record{border-top:1px solid #e6e9ed;padding-top:10px}.document-record:first-child{border-top:0;padding-top:0}.document-record small{display:block;color:#68717d;margin:4px 0;font-size:.88rem}.document-status{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef1f4;font-size:.84rem;font-weight:750}.document-status-current{background:#e8f7ef;color:#157551}.messages{list-style:none;padding:0}.messages li{padding:11px;border-radius:10px;background:#fff3e8;margin:9px 0}@media(max-width:750px){.document-page{padding:18px 15px 36px}.document-grid{grid-template-columns:1fr}}
+</style>
+
+<section class="document-page">
+    <a class="document-back" href="{% url 'instructor_course_workspace' session.public_id %}">← Back to Course</a>
+
+    <header class="document-heading">
+        <p>COURSE ARCHIVE</p>
+        <h1>{{ session.display_course_name }}</h1>
+        <p>Store the scanned Stamped List. The current version always shows its uploader and timestamp for the course record.</p>
+    </header>
+
+    <div class="document-grid">
+        <article class="document-panel">
+            <h2>Upload Stamped List</h2>
+            <p>Accepted: PDF, JPG or PNG, maximum 25 MB. For multiple pages, scan them into one PDF.</p>
+
+            {% if course_read_only %}
+            <p><strong>This course is cancelled and read-only.</strong> Existing archived copies remain available.</p>
+            {% else %}
+            <form method="post" enctype="multipart/form-data" class="document-upload">
+                {% csrf_token %}
+                <input type="file" name="document" accept="application/pdf,image/jpeg,image/png" required>
+                <textarea name="notes" placeholder="Optional archive note"></textarea>
+                <button class="document-button" type="submit">Save Stamped List</button>
+            </form>
+            {% endif %}
+        </article>
+
+        <article class="document-panel {% if current_stamped_list %}document-current{% endif %}">
+            <h2>Current Stamped List</h2>
+            {% if current_stamped_list %}
+                <strong>Stamped List — {{ current_stamped_list.original_name }}</strong>
+                <small>Uploaded {{ current_stamped_list.uploaded_at|date:"d M Y H:i" }} by {{ current_stamped_list.uploaded_by }}</small>
+                <a class="document-download" href="{% url 'stamped_list_download' current_stamped_list.public_id %}">Download Stamped List</a>
+            {% else %}<p>No Stamped List has been archived.</p>{% endif %}
+        </article>
+    </div>
+
+    {% if documents %}
+    <article class="document-panel" style="margin-top:18px">
+        <h2>Upload history</h2>
+        <div class="document-history">
+            {% for document in documents %}
+            <div class="document-record">
+                <strong>{{ document.original_name }}</strong>
+                <span class="document-status">Stamped List</span>
+                <span class="document-status {% if document.active %}document-status-current{% endif %}">{% if document.active %}Current{% else %}Previous version{% endif %}</span>
+                <small>{{ document.uploaded_at|date:"d M Y H:i" }} · {{ document.size_bytes|filesizeformat }} · uploaded by {{ document.uploaded_by }}</small>
+                <a href="{% url 'stamped_list_download' document.public_id %}">Download</a>
+            </div>
+            {% endfor %}
+        </div>
+    </article>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,4 @@
+<td><select name="line_item" required aria-label="Stock item"><option value="">Select item</option>{% for item in items %}{% if item.active %}<option value="{{ item.pk }}" data-unit="{{ item.unit }}" {% if line.item_id == item.pk %}selected{% endif %}>{{ item.name }}</option>{% endif %}{% endfor %}</select></td>
+<td class="issue-line-unit">{{ line.item.unit|default:"—" }}</td>
+<td><input type="number" name="line_quantity" min="1" required value="{{ line.quantity|default:'1' }}" aria-label="Quantity issued"></td>
+<td><button type="button" class="button button-secondary" data-remove-issue-line aria-label="Remove item">×</button></td>
