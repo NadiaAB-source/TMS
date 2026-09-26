@@ -1,0 +1,11 @@
+IQARUS TMS latest GitHub source package
+Package date: 26 September 2026
+
+Source order used:
+1. Complete accepted application after the 22 September layout release.
+2. Accepted 23 September visual/workflow corrections.
+3. 26 September clean-start, historical import, and chronological course numbering.
+
+The two supplied notebooks were reviewed to confirm the update order. They are not executed or included because they contain build history and temporary Colab review commands.
+
+This ZIP is source code only. Current staff accounts and permissions remain in the private Google Drive database.

@@ -1,0 +1,12 @@
+Upload this package to GitHub
+
+Simple archive method:
+1. Upload IQARUS_TMS_Latest_GitHub_2026_09_26.zip to the repository as the latest complete source package.
+2. Keep it as the handoff/archive copy.
+
+To make the source browsable in GitHub:
+1. Extract this ZIP on a computer.
+2. Use GitHub Desktop or Git to add the extracted IQARUS_TMS_Latest folder.
+3. Commit and push it to the repository.
+
+GitHub's browser limits one upload selection to 100 files, so GitHub Desktop/Git is the reliable way to publish the extracted full source tree. Uploading only the ZIP stores the complete package safely but does not extract it inside GitHub.

@@ -1,0 +1,821 @@
+{
+  "release": "IQARUS_TMS_Latest_2026_09_26",
+  "file_count": 163,
+  "files": [
+    {
+      "path": ".env.example",
+      "bytes": 320,
+      "sha256": "a8798d3f6c24df5950f0ec95ae17c625c2c8a7143b1c594a2d43b8c0c8f76645"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 341,
+      "sha256": "49f800bebd1351ce8f110ae44622f952db0b9a7fb9eed1f33682694ed0d9d943"
+    },
+    {
+      "path": "GITHUB_UPLOAD.txt",
+      "bytes": 636,
+      "sha256": "69562dd2a22b0adb613f2a07cb0e8a9ce3e72d7a060566bf38c612a4b605b203"
+    },
+    {
+      "path": "PACKAGE_INFO.txt",
+      "bytes": 594,
+      "sha256": "2ae24f58b26b85683edc0832178d1edc43741198757402222dec6f03f0f91cd5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1343,
+      "sha256": "9e43f9faa1c58973e1ed5c135e65cad4b130aa3c83241ed39b5bdb83b9d9406c"
+    },
+    {
+      "path": "app/config/__init__.py",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "app/config/asgi.py",
+      "bytes": 390,
+      "sha256": "b65d697d30052ea420ed9cf046ca2c47736ce79844324585118540bdde74ad84"
+    },
+    {
+      "path": "app/config/settings.py",
+      "bytes": 9137,
+      "sha256": "f4e86736af910fe81efdfe6fa710f5dc3a0498fd0041a7d22cd8f9344ee462d4"
+    },
+    {
+      "path": "app/config/urls.py",
+      "bytes": 1593,
+      "sha256": "a5939fc3e11e488a3cabdec59131ae38c083b00b5e0787023a2a257355fe8d4c"
+    },
+    {
+      "path": "app/config/wsgi.py",
+      "bytes": 390,
+      "sha256": "294d7a8f83aefe75482526c1e7795511c7232404bb1785539fc9167647b4fd93"
+    },
+    {
+      "path": "app/manage.py",
+      "bytes": 663,
+      "sha256": "0077ab12d378d44356039b99014d4c834c87dd42723e23f822339b2e424a963d"
+    },
+    {
+      "path": "app/portal/__init__.py",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "app/portal/access.py",
+      "bytes": 6558,
+      "sha256": "7b416ba81f4415f6d6c8a22a772eea9f1c20ea1e39440a9bebcad88fcb5c54e7"
+    },
+    {
+      "path": "app/portal/admin.py",
+      "bytes": 31150,
+      "sha256": "147d6c2beff3a24422a23df8bab108fc862e1e4eb18699b2afbc9365a67198ed"
+    },
+    {
+      "path": "app/portal/apps.py",
+      "bytes": 270,
+      "sha256": "1f375a7ce3748e8add51a69f2cbea68b49784f62da0b24fd8e1ea40c97baa5d0"
+    },
+    {
+      "path": "app/portal/auth_views.py",
+      "bytes": 4735,
+      "sha256": "18fd25ad8604701d72c9cd273d89af50fad966d3300af85ea1ed3c40f9a0ca6d"
+    },
+    {
+      "path": "app/portal/chronological_numbering.py",
+      "bytes": 2392,
+      "sha256": "6e62d9ea88752c3121706be60feae964d403a4209224f5b75b14670eaaf276a1"
+    },
+    {
+      "path": "app/portal/clean_start_service.py",
+      "bytes": 5385,
+      "sha256": "dfd495d505814a9b6ac9b3e6c8e1f6024dfc6fb7b8c508ed5b5b1c1b6fe24cd2"
+    },
+    {
+      "path": "app/portal/context_processors.py",
+      "bytes": 1742,
+      "sha256": "221f84af781d7a05f9774c1187b4c11dc31e67b1a3821881481a34b4e8c51a3c"
+    },
+    {
+      "path": "app/portal/course_presentation.py",
+      "bytes": 493,
+      "sha256": "4007102c1816e81bb8dd81ac84247259da3f37ebb0f3c49ec01ac699f90b5291"
+    },
+    {
+      "path": "app/portal/course_services.py",
+      "bytes": 13138,
+      "sha256": "18d212f2209c34622717258ed6bf00d6123eb3151f0e7e0c9b23e4bd2906b0f3"
+    },
+    {
+      "path": "app/portal/course_views.py",
+      "bytes": 7487,
+      "sha256": "b9ee9225cc1571044e718d0287c50b884d3e062907dcadd7f99cd49594db071c"
+    },
+    {
+      "path": "app/portal/course_workflow_views.py",
+      "bytes": 87328,
+      "sha256": "e81211c91784be6601dce6fdb02f517feaf2210f1e6831a38b9ac9b1784562d6"
+    },
+    {
+      "path": "app/portal/dashboard_history.py",
+      "bytes": 25810,
+      "sha256": "fc274442bcef0eb992c28f4bce0fc4fed602f8a351c31b859d41c1a5ec9957e5"
+    },
+    {
+      "path": "app/portal/directory_services.py",
+      "bytes": 11377,
+      "sha256": "7df9a28554b4a514d76fd90429140ecf95ff7d7f13d3f381fe7f51915f504daf"
+    },
+    {
+      "path": "app/portal/duplicate_services.py",
+      "bytes": 11599,
+      "sha256": "58c15d17b2d5b3189f5b139c1057f0cda322a527b268b264b3d956ef86708c58"
+    },
+    {
+      "path": "app/portal/external_upload_views.py",
+      "bytes": 7270,
+      "sha256": "9406e450085bc817cccf38ab7f423d7e47c9748585b988f627ff89ce7b61318b"
+    },
+    {
+      "path": "app/portal/forms.py",
+      "bytes": 10106,
+      "sha256": "2520923cd9f0ea5c1714f5d83eafc86a4367d4898a0adceb0f8a754828689c29"
+    },
+    {
+      "path": "app/portal/history_import_schema.py",
+      "bytes": 10037,
+      "sha256": "77f59166a02e8bc0154935907f62702cae8440bd6aa3dba0641f381958a080de"
+    },
+    {
+      "path": "app/portal/history_import_service.py",
+      "bytes": 26803,
+      "sha256": "c0187b7d0d03c7bd62f95e59502f6e5e55263720332cdb52b21878188a6cb608"
+    },
+    {
+      "path": "app/portal/history_import_urls.py",
+      "bytes": 175,
+      "sha256": "94a52cc3d5cbe9be9f1668dc2828f4b71a47f8759beb7973151e3a4ce4750a41"
+    },
+    {
+      "path": "app/portal/history_import_views.py",
+      "bytes": 5241,
+      "sha256": "65a2c714423ebe159c7f3ea46a89421e60577d144341c49f8857a0d252c0a9c3"
+    },
+    {
+      "path": "app/portal/identity.py",
+      "bytes": 711,
+      "sha256": "44ad789f991f6cc43a08db5c95114a547bb737ebabdae673f6a7dcf6154b5ffe"
+    },
+    {
+      "path": "app/portal/inventory_models.py",
+      "bytes": 2144,
+      "sha256": "d8fad67ae1bcc24491b68b12ee6212fc715aa4bf314cd0ee5fb10cd794d8e0f9"
+    },
+    {
+      "path": "app/portal/inventory_services.py",
+      "bytes": 8102,
+      "sha256": "98a873f2803bccd417fd554feee6e4e99456853380e20804e8d0254de9c35757"
+    },
+    {
+      "path": "app/portal/inventory_views.py",
+      "bytes": 9821,
+      "sha256": "e8ec3b365dd7a28c5b0c2455bf07766cfc12cf88edc270d142a523f7e3a9aec8"
+    },
+    {
+      "path": "app/portal/j35_grid_models.py",
+      "bytes": 1328,
+      "sha256": "5dc5ff9df90354d58aff7e86361a444e2d9f9d7081b58f3cdf01446e91f111df"
+    },
+    {
+      "path": "app/portal/j35_grid_services.py",
+      "bytes": 18835,
+      "sha256": "614e032ba67fde8a7fe02de88ecfd82734a046265d23572951393353e00e9877"
+    },
+    {
+      "path": "app/portal/j35_grid_urls.py",
+      "bytes": 159,
+      "sha256": "2dda59a6302642509aa33168019e3c491acdf2755343ed6347e85406576e1a1a"
+    },
+    {
+      "path": "app/portal/j35_grid_views.py",
+      "bytes": 9130,
+      "sha256": "a72a49174c72223fe1c730c371f69693b52e72dcab82bd6fcf71f54051ed2225"
+    },
+    {
+      "path": "app/portal/j35_services.py",
+      "bytes": 25335,
+      "sha256": "8e6530dbf9094b625bd26140da46dc9da2eccd27688915773d204f3178afcb47"
+    },
+    {
+      "path": "app/portal/management/__init__.py",
+      "bytes": 49,
+      "sha256": "af286bfc320f1e10a461761364f779685cce541dc1a8543bb2862d4559f3dc46"
+    },
+    {
+      "path": "app/portal/management/commands/__init__.py",
+      "bytes": 45,
+      "sha256": "1c6e83e482db79f47aa0db183dc5ac9f4306eedc12c1da61ab785af3d5e3eba9"
+    },
+    {
+      "path": "app/portal/management/commands/audit_course_reset.py",
+      "bytes": 6327,
+      "sha256": "3750385aa073e7888aff0a77077e35bef25b76f1092662e2c7bd48f72dfbb5e3"
+    },
+    {
+      "path": "app/portal/management/commands/bootstrap_staff_accounts.py",
+      "bytes": 11470,
+      "sha256": "9c2da96ccf43f73704f76953f865c1af495ad7a32776d166517cc46788f43ce8"
+    },
+    {
+      "path": "app/portal/management/commands/import_course_history.py",
+      "bytes": 1163,
+      "sha256": "b6bc71ec0289a135ff5508092d7b57700132298f769fe4c89e8b61d998567f96"
+    },
+    {
+      "path": "app/portal/management/commands/prepare_clean_start.py",
+      "bytes": 1295,
+      "sha256": "76de9f452b067693827210e5f01b986a750c66b5797b4e98d0dd6d83997450f9"
+    },
+    {
+      "path": "app/portal/management/commands/synchronise_staff_groups.py",
+      "bytes": 3556,
+      "sha256": "4d8a2c35d29acf43a1713f7c8268080a20de2aec0292a02f92b8b474bdd62e72"
+    },
+    {
+      "path": "app/portal/migrations/0001_initial.py",
+      "bytes": 19164,
+      "sha256": "fba7013dc233bae4a7493e081f808c4a702df601702a75b05603c6fd46bc051d"
+    },
+    {
+      "path": "app/portal/migrations/0002_sourcerecord.py",
+      "bytes": 2775,
+      "sha256": "bc88a20afdada585ad762496281e18cba0c36fb164c17f4a33eea356741b6bd1"
+    },
+    {
+      "path": "app/portal/migrations/0003_studentidentityproposal.py",
+      "bytes": 2776,
+      "sha256": "d7feb77c528299d86a28d7a340ed386e673acdb6fe26ff7b5d187ff0ed570989"
+    },
+    {
+      "path": "app/portal/migrations/0004_sourcerecord_linked_camp_sourcerecord_linked_course_and_more.py",
+      "bytes": 1089,
+      "sha256": "ccf928445eff6bca0e82b145d432e6a68db7abc3f49994ca8b6d0d61af913615"
+    },
+    {
+      "path": "app/portal/migrations/0005_coursesessionproposal.py",
+      "bytes": 3389,
+      "sha256": "649b578eb0ec2ae50f7969454d9affca16d6bda02ddbb2968fa05864791fb5e3"
+    },
+    {
+      "path": "app/portal/migrations/0006_activitylog_notification.py",
+      "bytes": 2946,
+      "sha256": "7f206410616ec83edca0ad28ec5c2ecb93243344e1c31071d048159a4f532b5b"
+    },
+    {
+      "path": "app/portal/migrations/0007_entityaliasproposal.py",
+      "bytes": 2784,
+      "sha256": "07e95ce03ef6a051ae3afeed9bda7548ec82b348b0650ee5e168257fed8a3e1d"
+    },
+    {
+      "path": "app/portal/migrations/0008_registration_submitted_unit.py",
+      "bytes": 413,
+      "sha256": "a9b27bb54d3f6675c3150badc979878992fdce51c722ede4d009812b5a7c6e8c"
+    },
+    {
+      "path": "app/portal/migrations/0009_registration_day1_attended_and_more.py",
+      "bytes": 577,
+      "sha256": "b4b6cfe287a9b0bf349b4dec587dd7a3803c24ba7642d8a2054a71cefc17101e"
+    },
+    {
+      "path": "app/portal/migrations/0010_registration_assessment_status.py",
+      "bytes": 568,
+      "sha256": "2a890fd04e25bd0084670851427d4deeabf8aaf9cd43a25b5c549177ebfcdebd"
+    },
+    {
+      "path": "app/portal/migrations/0011_stampedlistarchive.py",
+      "bytes": 1782,
+      "sha256": "a50e17818b9aae2d11ba0c2007c93487fb60f189c99641668e43242e84e80f08"
+    },
+    {
+      "path": "app/portal/migrations/0012_instructor_user_coursestudenttag.py",
+      "bytes": 2628,
+      "sha256": "f42240e031cad5535bf215ff695846f127a635c48c43fc3ae45b0e004e90ee9d"
+    },
+    {
+      "path": "app/portal/migrations/0013_delete_coursestudenttag.py",
+      "bytes": 320,
+      "sha256": "bc8f4dadafbd94f11544f123ac289b2008b2a64f8ad59a3794a2c2f5f1728d7b"
+    },
+    {
+      "path": "app/portal/migrations/0014_clean_course_workflow.py",
+      "bytes": 10035,
+      "sha256": "fbd7707428abfab755a0bfa80af53de65f566c18c38e27fd1247d0e369586a15"
+    },
+    {
+      "path": "app/portal/migrations/0015_assigned_instructors.py",
+      "bytes": 1008,
+      "sha256": "fe0bc8aa5881b3f175bccb852248d08b2ddd3c8ca610ede4675c685ebf034c14"
+    },
+    {
+      "path": "app/portal/migrations/0016_course_controls_instructor_inventory.py",
+      "bytes": 9140,
+      "sha256": "53dd59ffda8d5d9e474823911807fbdd680cc9fc0150b9c1c776c8a139c609b1"
+    },
+    {
+      "path": "app/portal/migrations/0017_registration_duplicate_review.py",
+      "bytes": 1834,
+      "sha256": "9168c007a97498995d90ae846266f29e49d2a186922cf92f242c5f433489c96a"
+    },
+    {
+      "path": "app/portal/migrations/0018_coursesession_service_branch.py",
+      "bytes": 966,
+      "sha256": "9b9ad0bbf1a2c1ba3f04da942f31582849063c893872ca4a0fec45509c987439"
+    },
+    {
+      "path": "app/portal/migrations/0019_secure_staff_j35_documents.py",
+      "bytes": 8979,
+      "sha256": "c5c923122ed3542e8d1e11720fac23396bb24a69840beae649ea6deb27b54096"
+    },
+    {
+      "path": "app/portal/migrations/0020_course_sequence_and_unified_stamped_list.py",
+      "bytes": 4149,
+      "sha256": "9ac2e2a54c7f906c98521b3cfcbd831b194686891ad477ef1a4fd45813f75177"
+    },
+    {
+      "path": "app/portal/migrations/0021_normalize_inventory_indexes.py",
+      "bytes": 678,
+      "sha256": "e3c6a5de8acb8230963cce56f5a841477214fcf60db91d85fccf6209761c2f8a"
+    },
+    {
+      "path": "app/portal/migrations/0022_j35_weekly_pipeline.py",
+      "bytes": 11256,
+      "sha256": "681e855998b7b71ea8b94e278b8f387eda52cf7f87b50ad90e00daa7f0e1ced5"
+    },
+    {
+      "path": "app/portal/migrations/0023_layout_planner_permissions_inventory.py",
+      "bytes": 7157,
+      "sha256": "695a662881e3bb3441a9958f5f02f5b1e794b4edc262fed823dc12351b943e45"
+    },
+    {
+      "path": "app/portal/migrations/__init__.py",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "app/portal/models.py",
+      "bytes": 58006,
+      "sha256": "740f3380b9af183e2b182d365070b7f41b0c4b667f2a530e3adc9392fa7fd922"
+    },
+    {
+      "path": "app/portal/module_access.py",
+      "bytes": 3736,
+      "sha256": "53f236e2153713c7596dd376d5d52aeccfc21f1cf09dff96a05a164c3738b5ad"
+    },
+    {
+      "path": "app/portal/normalization.py",
+      "bytes": 365,
+      "sha256": "b09320557b49f1602102a0c3b4ad92213f032a140dd718fe4ae36dbd620bf5ef"
+    },
+    {
+      "path": "app/portal/planner_views.py",
+      "bytes": 29964,
+      "sha256": "d69e5639daaae8ee5a519753882d954a86e20a207e172ab00035f6d815a75a48"
+    },
+    {
+      "path": "app/portal/public_registration_views.py",
+      "bytes": 12892,
+      "sha256": "39110da071fd9201d48ce86a6163e5cb6f8fc27f54952f9851e491f281efaf74"
+    },
+    {
+      "path": "app/portal/registration_views.py",
+      "bytes": 6121,
+      "sha256": "e1ce0c4f0dd0ac95a7cac3427c9d6e6553725fddd4dc21e5502c7c95a2f5cbad"
+    },
+    {
+      "path": "app/portal/report_export.py",
+      "bytes": 7013,
+      "sha256": "3319154f714bfc1221184433fbe269004a92cb0570e0143d0e4962a9be2abb61"
+    },
+    {
+      "path": "app/portal/report_views.py",
+      "bytes": 12005,
+      "sha256": "2be2bb8df3380721b85a7bacc54cde797beb86596897e8c2eb7adff2a6f6dbb6"
+    },
+    {
+      "path": "app/portal/resources/Historical_Import_Example.xlsx",
+      "bytes": 449878,
+      "sha256": "9ca2faf079999693216e99fa113b6ed9cfb15a65f76330627a3138188e77a868"
+    },
+    {
+      "path": "app/portal/resources/stamped_list_template.xlsx",
+      "bytes": 9490,
+      "sha256": "c534d50177d579fd1425f816e20059089f43eee938c771f3e7b86d0a6ce88c86"
+    },
+    {
+      "path": "app/portal/security.py",
+      "bytes": 2312,
+      "sha256": "33c2a2af6287cf737c04bee1452ff85ee44b60b2c1ae0c918a87b49c49354d74"
+    },
+    {
+      "path": "app/portal/signals.py",
+      "bytes": 1243,
+      "sha256": "e37058c4d5db1465474063d79e2e9241596e0f24fee7c3a194545d10fe3ba9b2"
+    },
+    {
+      "path": "app/portal/staff_access_models.py",
+      "bytes": 1838,
+      "sha256": "824bc6d6effc7615e89add4e7ad70a8536b0f9f390d4eb463613aff5a5129c23"
+    },
+    {
+      "path": "app/portal/staff_access_urls.py",
+      "bytes": 134,
+      "sha256": "1f650f8334c79169df54cad956343f427619cf268d7985c380793c64e017aee8"
+    },
+    {
+      "path": "app/portal/staff_access_views.py",
+      "bytes": 11769,
+      "sha256": "43d54c96511aef211a0eefd1cacff66da6f78f857d095129f3ac8f19869cd424"
+    },
+    {
+      "path": "app/portal/staff_groups.py",
+      "bytes": 8312,
+      "sha256": "29d12e3c36bd881e9b7fd932fcbced32126c09b23061d3529f4e39ca54e1be79"
+    },
+    {
+      "path": "app/portal/stamped_list_views.py",
+      "bytes": 8106,
+      "sha256": "8bafec583419269757abb6f90a9fa8157a3dfffa3c1f0c870b66346ccdf29566"
+    },
+    {
+      "path": "app/portal/static/portal/css/course_workspace_layout.css",
+      "bytes": 5051,
+      "sha256": "64477f15245da5e4233852fe17b1be68ea7d55d17431b70dbf1f9a1e680e8b9d"
+    },
+    {
+      "path": "app/portal/static/portal/css/course_workspace_restored.css",
+      "bytes": 9026,
+      "sha256": "b985e973b260df2337fed9dc95a42b8eb3ac51a46f4023345308b640a18ce878"
+    },
+    {
+      "path": "app/portal/static/portal/css/inventory_layout.css",
+      "bytes": 3262,
+      "sha256": "9f066a7a403f4872b50bb819af6a29e5b6d1c1552662afef5b8e538c6601fa5f"
+    },
+    {
+      "path": "app/portal/static/portal/css/j35_grid.css",
+      "bytes": 9254,
+      "sha256": "7918eb1f9927191a5e5c743b652e58c54cf49b24ac6776802e56ba5d21f904f1"
+    },
+    {
+      "path": "app/portal/static/portal/css/reference_tables.css",
+      "bytes": 7691,
+      "sha256": "1cc5f28405211529759cba2050fda7a0b4377ec7ecdfaf8836660f8f1facb371"
+    },
+    {
+      "path": "app/portal/static/portal/css/staff_access.css",
+      "bytes": 6640,
+      "sha256": "091b40e691483da6a7185cf9947101c5298199414ac3e17b284a89fb08fa8ecd"
+    },
+    {
+      "path": "app/portal/static/portal/css/styles.css",
+      "bytes": 9841,
+      "sha256": "7e7fe8961caf3dce9ca3c7d84ea78c5263b9b2cb74f33c15ce64bb85869e8728"
+    },
+    {
+      "path": "app/portal/static/portal/js/app_feedback.js",
+      "bytes": 3706,
+      "sha256": "609c1f09380de32cfbf18f05a0d8e8c094020bd1d2a01c514e43105fd929ebeb"
+    },
+    {
+      "path": "app/portal/static/portal/js/course_create.js",
+      "bytes": 2494,
+      "sha256": "8fbc1a8cebdf9f6ba7f4c464107cd0852e78ef4cfa1952edad90e81b9e13b621"
+    },
+    {
+      "path": "app/portal/static/portal/js/inventory_layout.js",
+      "bytes": 2117,
+      "sha256": "5d91807718678c36b986a955dfe0b510d8ab281efd8e568ea8c8ed830265352b"
+    },
+    {
+      "path": "app/portal/static/portal/js/j35_grid.js",
+      "bytes": 10752,
+      "sha256": "06d9e0fb73fae2b2a51a89e2914bd844b0c5ab7fd5cfb80a39b1eeb2a0764335"
+    },
+    {
+      "path": "app/portal/static/portal/js/scroll_position.js",
+      "bytes": 4406,
+      "sha256": "0cfc04a3c4d70ff78a49484dd49f25328d99e8b005eddb254409461ea231ea1d"
+    },
+    {
+      "path": "app/portal/static/portal/js/staff_access.js",
+      "bytes": 2803,
+      "sha256": "e96d8cac2fa4329a6cc18dfb2db638c064bf2b99dc81ab8d85364a2b129bd078"
+    },
+    {
+      "path": "app/portal/static/portal/js/student_selection.js",
+      "bytes": 1082,
+      "sha256": "b8d80100ee90af873dc01393f58f8216ca824dce04f27a5d40a624b04fea5b61"
+    },
+    {
+      "path": "app/portal/student_services.py",
+      "bytes": 3758,
+      "sha256": "2b0b744a3fe81c3e9c7af83edea7de4f670a4692d7c6074a589cc7e447a65545"
+    },
+    {
+      "path": "app/portal/templates/portal/_j35_grid.html",
+      "bytes": 10269,
+      "sha256": "b1e27faad8c2cc9f48f241bea05b39513fddfc308896708003e0dea0deac4caf"
+    },
+    {
+      "path": "app/portal/templates/portal/_j35_grid_rows.html",
+      "bytes": 3349,
+      "sha256": "74d31815637b1db31605172d8ec231acf189983d9f8cb4f99b98baa8df498d00"
+    },
+    {
+      "path": "app/portal/templates/portal/course_create.html",
+      "bytes": 7984,
+      "sha256": "5da0802151932a3fac27a35058ae4f0be16338bb61cb078d62302cd646970c1e"
+    },
+    {
+      "path": "app/portal/templates/portal/course_registration.html",
+      "bytes": 10690,
+      "sha256": "27a3f745ac660e8027cf4b63beac1182ca4818bd10b112c3e2d418759d894230"
+    },
+    {
+      "path": "app/portal/templates/portal/course_session_detail.html",
+      "bytes": 8504,
+      "sha256": "8cc31b5e72143b5aba3a2533c2604c04e5f3824f7e7ff2170f0a39c55c99d231"
+    },
+    {
+      "path": "app/portal/templates/portal/course_session_list.html",
+      "bytes": 5769,
+      "sha256": "97f487c2f3a209f177f1ab62e15b3ad5383b56e0b8586fd5e7d1528069e4d9b8"
+    },
+    {
+      "path": "app/portal/templates/portal/course_workspace.html",
+      "bytes": 20182,
+      "sha256": "4571b9f6ff6942475580efc97985894b547a0bfe72c58c243315bf7ed8a504c9"
+    },
+    {
+      "path": "app/portal/templates/portal/data_quality_workbench.html",
+      "bytes": 4326,
+      "sha256": "9b9acbd1c55a3f39cb4f157da0e34a165bb1be96d15e51b4f9c8152e9ecdb939"
+    },
+    {
+      "path": "app/portal/templates/portal/history_import.html",
+      "bytes": 3478,
+      "sha256": "594e21cc8e927f8b78f9a70f8a0dcdd56a444c515306fe8a150ea9e3be5b4c16"
+    },
+    {
+      "path": "app/portal/templates/portal/inventory.html",
+      "bytes": 14269,
+      "sha256": "d7ab6c98540d19e18c7e50f1cc2268349a01aec094efac3366af319e23c70077"
+    },
+    {
+      "path": "app/portal/templates/portal/j35_grid.html",
+      "bytes": 160,
+      "sha256": "a44ee2b64b4c3883fafc00ab8628e3583c01bc3041f677f08e85c5417bf75a18"
+    },
+    {
+      "path": "app/portal/templates/portal/j35_planner.html",
+      "bytes": 44562,
+      "sha256": "ad4c147e106fdc6e7bd88911a0ad19e9cbe5204b6e8b2539fe318cee4e08986e"
+    },
+    {
+      "path": "app/portal/templates/portal/my_courses.html",
+      "bytes": 4754,
+      "sha256": "72ed1ada3611c5631934489fff8f2310dbf29cd27d3b5b3713ebae2ad39c8e18"
+    },
+    {
+      "path": "app/portal/templates/portal/notification_inbox.html",
+      "bytes": 1867,
+      "sha256": "8746f3b310d9ffc40d30e850aebde0ce55c77a5ed8aca21cff14b425a09ee0ac"
+    },
+    {
+      "path": "app/portal/templates/portal/partials/stock_issue_line.html",
+      "bytes": 643,
+      "sha256": "f9ee513e48e25c64923b4dd54fe746abb7e6e2e7794fbdce5bfc43b85ee8d7d3"
+    },
+    {
+      "path": "app/portal/templates/portal/people_teams.html",
+      "bytes": 40,
+      "sha256": "033ac021692d2b9a456e4dcfe34361594d37942beb8b5a35d0794349f12c29d2"
+    },
+    {
+      "path": "app/portal/templates/portal/registration_detail.html",
+      "bytes": 10038,
+      "sha256": "f39fbe2b0c321401f2184bb4fe11638e22befa21075c6d6270cc253730c2984e"
+    },
+    {
+      "path": "app/portal/templates/portal/registration_list.html",
+      "bytes": 13406,
+      "sha256": "c828bc4ac4df40995c7b77b543478b433f3f0cbc36a5e1af3e8ac859f5a79ff0"
+    },
+    {
+      "path": "app/portal/templates/portal/registration_qr.html",
+      "bytes": 9735,
+      "sha256": "28ca9efd8f1e98412cd7c890ae6b95310963f521aef1102468a4f8907e35b8d8"
+    },
+    {
+      "path": "app/portal/templates/portal/reports.html",
+      "bytes": 12743,
+      "sha256": "a122d5d4878932750eb00f36dad159e5d0485ea7f189144f8c0d993761c05ad1"
+    },
+    {
+      "path": "app/portal/templates/portal/staff_access.html",
+      "bytes": 11787,
+      "sha256": "77a8f5b06f5805a33f14dcb04f1322bfa0092f8e6606e91e3e52bc21bf21cb05"
+    },
+    {
+      "path": "app/portal/templates/portal/staff_teams.html",
+      "bytes": 12541,
+      "sha256": "cfc8bf0f01cbfdd5208d5ad7c74e948a6d25186aa54b455dc311b93e210b5cb2"
+    },
+    {
+      "path": "app/portal/templates/portal/stamped_lists.html",
+      "bytes": 4903,
+      "sha256": "60ba943a49b78f718d7f9d314ac62649bf26fbb147bc51974f6377844b454819"
+    },
+    {
+      "path": "app/portal/templates/portal/training_record_list.html",
+      "bytes": 9007,
+      "sha256": "53235cd4c6f6efa5c40892a6391013f3695d2e51a00ac60be0467b1619b8ee79"
+    },
+    {
+      "path": "app/portal/templates/portal/training_record_print.html",
+      "bytes": 2880,
+      "sha256": "4a33026db00a7b53f36924b450c750195cbf8cc5ea18abce3dd9c951449a1cff"
+    },
+    {
+      "path": "app/portal/test_clean_start_history.py",
+      "bytes": 12826,
+      "sha256": "f5dae6cfde61af1d8577075baa65ee34667b5780518d61d652c281e5a91c9b37"
+    },
+    {
+      "path": "app/portal/test_inventory_layout.py",
+      "bytes": 10721,
+      "sha256": "4982244f33ed550607d64f6917939cc8d3b574e6a9c131f3925a08a31018d1b4"
+    },
+    {
+      "path": "app/portal/test_layout_directories.py",
+      "bytes": 8472,
+      "sha256": "eabaa5fd79401c7b7366c0c27c8068cede9030ab564f5e89f6e26a94f62a4061"
+    },
+    {
+      "path": "app/portal/test_review_corrections.py",
+      "bytes": 7678,
+      "sha256": "574cf2aadcc6cfc3e66f98254f9a662034a451ebd0b6e752bc9d4f8593c5d62b"
+    },
+    {
+      "path": "app/portal/tests.py",
+      "bytes": 87755,
+      "sha256": "56614a87ad99e96966944034d1d0f971f4aae14f034ba4741c15d868e7dd3fe9"
+    },
+    {
+      "path": "app/portal/tests_j35_grid.py",
+      "bytes": 12135,
+      "sha256": "c994dd0cbf72f1c893795d763c555824e7b0ec11e87bef777134404f8a263fb7"
+    },
+    {
+      "path": "app/portal/tests_staff_access.py",
+      "bytes": 11902,
+      "sha256": "8379daf5f6d4c19d972f18b44b191dc52738b5e0d0d8f304591e001fa4fced24"
+    },
+    {
+      "path": "app/portal/training_views.py",
+      "bytes": 11375,
+      "sha256": "3e6b600b37812d173b21767d9c3aa21bea063cc1eefa8eeb80325ccc889a541c"
+    },
+    {
+      "path": "app/portal/urls.py",
+      "bytes": 5468,
+      "sha256": "9b92983012e66c51df546f26a358e339a5f21f2de7c21c2ae32fb1b5529ffca9"
+    },
+    {
+      "path": "app/portal/views.py",
+      "bytes": 25975,
+      "sha256": "8be6de9f40793372885be52903f5159a9a7e7f7e699e99e6a435556f428d378e"
+    },
+    {
+      "path": "app/portal/visual_review.py",
+      "bytes": 14483,
+      "sha256": "5cb42d3c464cddd6ba5bd4ddf8399476d5117a3c089d4a219630c80f36ec47ae"
+    },
+    {
+      "path": "app/requirements.txt",
+      "bytes": 134,
+      "sha256": "5e50f6cca9cff724f40b7b9f1af4808ce522894e63ab2678a0e48eeafbd1a899"
+    },
+    {
+      "path": "app/static/css/app.css",
+      "bytes": 62259,
+      "sha256": "20b9d77d0b568d97532d9e9a0766c231e3a38d61801c83cd9999a7e048b969ee"
+    },
+    {
+      "path": "app/static/css/corrections_20260923.css",
+      "bytes": 8152,
+      "sha256": "dad75d75c992f709f4bee5a597b5209568abb69f22750fd19ec97033d904850b"
+    },
+    {
+      "path": "app/static/css/directory_reports.css",
+      "bytes": 6915,
+      "sha256": "5f55b50d158d90ba962f7d5dfee9f3e2f40c0a0fa03a4c9285cc3910778fdf2c"
+    },
+    {
+      "path": "app/static/css/layout_20260922.css",
+      "bytes": 13717,
+      "sha256": "eab033a00564a2446469b6291c22c3ed3c8aaf66546b2b2fdddb0544d547d797"
+    },
+    {
+      "path": "app/static/images/iqarus-logo-approved.png",
+      "bytes": 6540,
+      "sha256": "5a5dcfc8b27ad15b814ee67f8621d23eae8765538bbd8a3e86fd67277d5ac11d"
+    },
+    {
+      "path": "app/static/images/iqarus-logo-transparent.png",
+      "bytes": 83097,
+      "sha256": "10ad04bd6c914ac8c2bc72da589e0c76af82d32343bea253691b294ef7b8fbd8"
+    },
+    {
+      "path": "app/static/images/iqarus-logo.png",
+      "bytes": 22450,
+      "sha256": "b37db76e0422bb0103245aa7f784b8f9c9a09faf3542d9758561a3b0b557d790"
+    },
+    {
+      "path": "app/templates/base.html",
+      "bytes": 8107,
+      "sha256": "3edc4ea184d712b1fa9958c01f8b7c39ad9f408294e531349e07f2351a768217"
+    },
+    {
+      "path": "app/templates/portal/dashboard.html",
+      "bytes": 6876,
+      "sha256": "88c15327102732fcedbedee1d2e8f39dc54d05a91b92cbfda3ffae602e16964d"
+    },
+    {
+      "path": "app/templates/portal/module_page.html",
+      "bytes": 881,
+      "sha256": "99a0f5ba40cdd65a168442ff60fff4c1a0a7ae0bde164d16b315bc77a1a07cef"
+    },
+    {
+      "path": "app/templates/portal/student_detail.html",
+      "bytes": 2902,
+      "sha256": "d495694140081e7a9b6ac17277a9b1440baeddb0d8684831a1e755473034dffd"
+    },
+    {
+      "path": "app/templates/portal/student_list.html",
+      "bytes": 7528,
+      "sha256": "3b28eb22e057efb809eb7db8a3d1d5e1a2f1e2ac8e5dfa311d933584945bbd39"
+    },
+    {
+      "path": "app/templates/portal/student_print.html",
+      "bytes": 4814,
+      "sha256": "1140cf96ffc1bcd53ef74aa94df8fb94b97e375cb5203135bfadad8725743d04"
+    },
+    {
+      "path": "app/templates/registration/login.html",
+      "bytes": 1292,
+      "sha256": "ee054a7f3deefc675b5d3b20814cea9179adb34783792345baa30b33fe5cbca4"
+    },
+    {
+      "path": "app/templates/registration/password_change_done.html",
+      "bytes": 500,
+      "sha256": "2cd706300beb9e3dbec14cbaf45f9f4d628685bfc8d0830d63f83885f220ed3e"
+    },
+    {
+      "path": "app/templates/registration/password_change_form.html",
+      "bytes": 1304,
+      "sha256": "ae988bcc5ebb57b43237a20e1d7d7612434efc123f19496435f63799db67e9a8"
+    },
+    {
+      "path": "app/templates/registration/password_reset_complete.html",
+      "bytes": 364,
+      "sha256": "9e255ee02e43c82dc1864de943ba724e5b3bb7795a742dfd72d2ccb2274c4aa0"
+    },
+    {
+      "path": "app/templates/registration/password_reset_confirm.html",
+      "bytes": 868,
+      "sha256": "76752900a7e384455be27c7218a1c70a5a2c063588633d74f2cf7b4873d066a8"
+    },
+    {
+      "path": "app/templates/registration/password_reset_done.html",
+      "bytes": 422,
+      "sha256": "5d7fe0807ecc54535943367b76ee58a77be7f25b62ef987bd50f661a9b2af169"
+    },
+    {
+      "path": "app/templates/registration/password_reset_email.html",
+      "bytes": 232,
+      "sha256": "161acfca11b3ae9069b10e0264bd3320db8750da7320741a5cc90a4a3632ea05"
+    },
+    {
+      "path": "app/templates/registration/password_reset_form.html",
+      "bytes": 763,
+      "sha256": "01f19da1eeab242f0b436c5961f271f8498b0ade67576f8423380f7f4d68c3b5"
+    },
+    {
+      "path": "app/templates/registration/password_reset_subject.txt",
+      "bytes": 26,
+      "sha256": "760f48d619757edbc888f2697ce1380b76a22febf5c942849cadf58c47ab26cf"
+    }
+  ]
+}

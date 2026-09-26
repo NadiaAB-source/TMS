@@ -1,0 +1,26 @@
+# Private runtime data stays outside version control.
+*.sqlite*
+*.db
+*.db-*
+*.sql
+.env
+.env.*
+private/
+backups/
+media/
+uploads/
+saved course lists/
+stamped lists/
+history_import_pending/
+*password*.csv
+*credentials*.csv
+secret_key.txt
+_iqarus_review_*
+staticfiles/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+*.log
+.ipynb_checkpoints/
