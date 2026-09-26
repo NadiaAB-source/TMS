@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.display_name }} | IQARUS TMS{% endblock %}
+{% block page_heading %}Student Profile{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'students' %}">
+    ← Back to Students
+</a>
+
+<section class="profile-card">
+    <div>
+        <p class="eyebrow">STUDENT PROFILE</p>
+        <h2>{{ student.display_name }}</h2>
+        {% if student.name_arabic %}
+        <p class="profile-arabic" dir="rtl">
+            {{ student.name_arabic }}
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="profile-tags">
+        <span class="directory-badge quality-{{ student.identity_status }}">
+            {{ student.get_identity_status_display }}
+        </span>
+    </div>
+</section>
+
+<section class="detail-grid">
+    <article>
+        <span>Emirates ID</span>
+        <strong>{{ student.formatted_eid }}</strong>
+    </article>
+    <article>
+        <span>Email</span>
+        <strong>{{ student.email|default:"—" }}</strong>
+    </article>
+    <article>
+        <span>Phone</span>
+        <strong>{{ student.phone|default:"—" }}</strong>
+    </article>
+    <article>
+        <span>Training records</span>
+        <strong>{{ participations|length }}</strong>
+    </article>
+</section>
+
+<section class="content-section">
+    <div class="section-title">
+        <div>
+            <h2>Training history</h2>
+            <p>Every course participation linked to this student.</p>
+        </div>
+    </div>
+
+    <div class="table-shell">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Dates</th>
+                    <th>Camp</th>
+                    <th>Attendance</th>
+                    <th>Result</th>
+                    <th>HP</th>
+                    <th>TTT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in participations %}
+                <tr>
+                    <td>{{ row.course_name }}</td>
+                    <td>
+                        {{ row.session.start_date|date:"d M Y"|default:"—" }}
+                        –
+                        {{ row.session.end_date|date:"d M Y"|default:"—" }}
+                    </td>
+                    <td>{{ row.session.camp|default:"—" }}</td>
+                    <td>{{ row.attendance }}</td>
+                    <td>{{ row.outcome_label }}</td>
+                    <td>{% if row.is_hp %}Yes{% else %}No{% endif %}</td>
+                    <td>{% if row.is_ttt %}Yes{% else %}No{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty-table">
+                        No approved training records yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

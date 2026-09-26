@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | IQARUS TMS{% endblock %}
+{% block page_heading %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-page">
+    <h1 class="sr-only">Dashboard</h1>
+    <div class="dashboard-overview">
+    <form class="dashboard-filters" method="get">
+        <label>
+            <span>Course</span>
+            <select name="course">
+                <option value="">All courses</option>
+                {% for course in courses %}
+                <option value="{{ course.id }}"{% if selected_course == course.id|stringformat:"s" %} selected{% endif %}>{{ course.title_english }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            <span>Team</span>
+            <select name="team">
+                <option value="">All teams</option>
+                {% for team in teams %}
+                <option value="{{ team.id }}"{% if selected_team == team.id|stringformat:"s" %} selected{% endif %}>{{ team.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            <span>Instructor</span>
+            <select name="instructor">
+                <option value="">All instructors</option>
+                {% for instructor in instructors %}
+                <option value="{{ instructor.id }}"{% if selected_instructor == instructor.id|stringformat:"s" %} selected{% endif %}>{{ instructor.name_english }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label><span>From</span><input type="date" name="date_from" value="{{ date_from }}"></label>
+        <label><span>To</span><input type="date" name="date_to" value="{{ date_to }}"></label>
+        <label class="dashboard-all-history">
+            <input type="checkbox" name="all_history" value="1"{% if all_history %} checked{% endif %} aria-describedby="all-history-help">
+            <span>All history</span>
+        </label>
+        <span id="all-history-help" class="sr-only">Ignore the From and To dates and include all available history.</span>
+        <button class="dashboard-apply" type="submit">Apply</button>
+    </form>
+
+    <div class="dashboard-summary-grid" aria-label="Course and student totals">
+        <article class="summary-counter-card">
+            <div class="summary-counter-block">
+                <h2>Courses</h2>
+                <strong class="summary-odometer" aria-label="{{ totals.courses }} courses">
+                    {% for digit in totals.courses_digits %}<span>{{ digit }}</span>{% endfor %}
+                </strong>
+            </div>
+            <div class="summary-counter-block">
+                <h2>Enrolled</h2>
+                <strong class="summary-odometer" aria-label="{{ totals.enrolled }} enrolled students">
+                    {% for digit in totals.enrolled_digits %}<span>{{ digit }}</span>{% endfor %}
+                </strong>
+            </div>
+        </article>
+
+        <article class="summary-counter-card">
+            <div class="summary-counter-block">
+                <h2>Passed</h2>
+                <strong class="summary-odometer" aria-label="{{ totals.passed }} passed students">
+                    {% for digit in totals.passed_digits %}<span>{{ digit }}</span>{% endfor %}
+                </strong>
+            </div>
+            <div class="counter-breakdown-row">
+                <span>HP</span>
+                <strong class="summary-odometer compact" aria-label="{{ totals.hp }} HP students">
+                    {% for digit in totals.hp_digits %}<span>{{ digit }}</span>{% endfor %}
+                </strong>
+            </div>
+            <div class="counter-breakdown-row">
+                <span>TTT</span>
+                <strong class="summary-odometer compact" aria-label="{{ totals.ttt }} TTT students">
+                    {% for digit in totals.ttt_digits %}<span>{{ digit }}</span>{% endfor %}
+                </strong>
+            </div>
+        </article>
+
+        <article class="summary-counter-card">
+            <div class="summary-counter-block">
+                <h2>Failed</h2>
+                <strong class="summary-odometer" aria-label="{{ totals.failed }} failed students">
+                    {% for digit in totals.failed_digits %}<span>{{ digit }}</span>{% endfor %}
+                </strong>
+            </div>
+            <div class="summary-counter-block">
+                <h2>Rejected</h2>
+                <strong class="summary-odometer" aria-label="{{ totals.rejected }} rejected students">
+                    {% for digit in totals.rejected_digits %}<span>{{ digit }}</span>{% endfor %}
+                </strong>
+            </div>
+        </article>
+
+    </div>
+
+        <article class="dashboard-chart-card" aria-label="Monthly student outcomes">
+            <div class="chart-legend" aria-hidden="true">
+                <span><i class="legend-passed"></i>Passed</span>
+                <span><i class="legend-failed"></i>Failed</span>
+                <span><i class="legend-rejected"></i>Rejected</span>
+                <span><i class="legend-enrolled"></i>Enrolled</span>
+            </div>
+            <svg class="dashboard-chart" viewBox="0 0 720 250" role="img" aria-label="Monthly passed, failed, rejected and enrolled students">
+                <title>Monthly student outcomes</title>
+                <desc>Counts use the same course, team, instructor and date filters as the summary counters.</desc>
+                <g transform="translate(0,26)">
+                    {% for tick in chart_ticks %}
+                    <line class="chart-gridline" x1="30" y1="{{ tick.y }}" x2="705" y2="{{ tick.y }}"></line>
+                    <text class="chart-axis-label" x="24" y="{{ tick.y }}" text-anchor="end" dominant-baseline="middle">{{ tick.value }}</text>
+                    {% endfor %}
+                    {% for row in chart_rows %}
+                    <rect class="chart-passed" x="{{ row.x }}" y="{{ row.passed_y }}" width="28" height="{{ row.passed_height }}"></rect>
+                    <rect class="chart-failed" x="{{ row.x }}" y="{{ row.failed_y }}" width="28" height="{{ row.failed_height }}"></rect>
+                    <rect class="chart-rejected" x="{{ row.x }}" y="{{ row.rejected_y }}" width="28" height="{{ row.rejected_height }}"></rect>
+                    <text class="chart-month" x="{{ row.x|add:"14" }}" y="216" text-anchor="middle">{{ row.name }}</text>
+                    {% endfor %}
+                    <polyline class="chart-enrolled-line" points="{{ chart_line_points }}"></polyline>
+                    {% for row in chart_rows %}<circle class="chart-enrolled-dot" cx="{{ row.x|add:"14" }}" cy="{{ row.enrolled_y }}" r="5"></circle>{% endfor %}
+                </g>
+            </svg>
+        </article>
+    </div>
+
+    {% include "portal/_j35_grid.html" %}
+</section>
+{% endblock %}

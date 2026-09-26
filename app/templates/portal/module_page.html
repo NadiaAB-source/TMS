@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ module.title }} | IQARUS TMS{% endblock %}
+{% block page_heading %}{{ module.title }}{% endblock %}
+
+{% block content %}
+<section class="module-hero">
+    <p class="eyebrow">OPERATIONAL WORKSPACE</p>
+    <h2>{{ module.title }}</h2>
+    <p>{{ module.description }}</p>
+</section>
+
+{% if data_quality_links %}
+<div class="quality-link-grid">
+    {% for item in data_quality_links %}
+    <a href="{{ item.url }}" class="quality-link">
+        <span>{{ item.label }}</span>
+        <strong>Open →</strong>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<section class="empty-state">
+    <span class="empty-icon">✓</span>
+    <h3>Interface foundation ready</h3>
+    <p>
+        This operational page will now be activated with its
+        dedicated search, filters, actions and permissions.
+    </p>
+</section>
+{% endif %}
+{% endblock %}

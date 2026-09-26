@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="iqarus-release" content="corrections-20260923">
+    <title>{% block title %}IQARUS TMS{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout_20260922.css' %}">
+    <link rel="stylesheet" href="{% static 'css/directory_reports.css' %}">
+    <link rel="stylesheet" href="{% static 'css/corrections_20260923.css' %}">
+    {% block extra_css %}{% endblock %}
+    <script defer src="{% static 'portal/js/scroll_position.js' %}"></script>
+    <script defer src="{% static 'portal/js/app_feedback.js' %}"></script>
+</head>
+<body class="layout-approved">
+{% if user.is_authenticated %}
+    <div class="app-shell">
+        <header class="site-header">
+            <div class="header-masthead">
+                <a class="sidebar-brand" href="{% if can_view_dashboard %}{% url 'dashboard' %}{% else %}{% url 'my_courses' %}{% endif %}" aria-label="IQARUS home">
+                    <span class="sidebar-logo">
+                        <img src="{% static 'images/iqarus-logo-approved.png' %}" alt="IQARUS — The Power of Health">
+                    </span>
+                </a>
+
+                <div class="header-tools">
+                    {% if can_view_students %}<form
+                        class="global-search"
+                        action="{% url 'students' %}"
+                        method="get"
+                    >
+                        <input
+                            name="q"
+                            type="search"
+                            placeholder="Search students...."
+                            aria-label="Search students"
+                        >
+                    </form>{% endif %}
+
+                    <a
+                        class="notification-link {% if request.resolver_match.url_name == 'notification_inbox' %}is-active{% endif %}"
+                        href="{% url 'notification_inbox' %}"
+                        aria-label="Notifications{% if notification_unread_count %}: {{ notification_unread_count }} unread{% endif %}"
+                    >
+                        <svg class="notification-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M9 20h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="notification-title">Notifications</span>
+                        {% if notification_unread_count %}
+                            <span class="notification-badge" aria-hidden="true">
+                                {{ notification_unread_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <div class="account-block">
+                        <span class="user-name">
+                            {{ user.get_full_name|default:user.username }}
+                        </span>
+
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="sign-out" type="submit">
+                                Sign out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="navigation" aria-label="Main navigation">
+                {% if can_view_dashboard %}
+                <a href="{% url 'dashboard' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'j35_planner' or request.resolver_match.url_name == 'schedule' %}active{% endif %}">
+                    <span class="nav-title">Dashboard</span>
+                    <span class="nav-description">Overview{% if j35_planner_access %}<br>J35{% endif %}</span>
+                </a>
+                {% endif %}
+                {% if my_courses_access %}<a href="{% url 'my_courses' %}"
+                   class="nav-link {% if request.path|slice:":12" == '/my-courses/' %}active{% endif %}">
+                    <span class="nav-title">My Courses</span>
+                    <span class="nav-description">Your job cards<br>Course QR code</span>
+                </a>{% endif %}
+                {% if can_view_students %}
+                <a href="{% url 'students' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'students' %}active{% endif %}">
+                    <span class="nav-title">Students</span>
+                    <span class="nav-description">Records<br>History</span>
+                </a>
+                {% endif %}
+                {% if can_view_course_directory %}
+                <a href="{% url 'courses_sessions' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'courses_sessions' or request.resolver_match.url_name == 'course_session_detail' %}active{% endif %}">
+                    <span class="nav-title">Directory</span>
+                    <span class="nav-description">Master list<br>Course status</span>
+                </a>
+                {% endif %}
+                {% if can_view_staff %}
+                <a href="{% url 'staff' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'staff' %}active{% endif %}">
+                    <span class="nav-title">Staff</span>
+                    <span class="nav-description">Contact info<br>Assignments</span>
+                </a>
+                {% endif %}
+                {% if can_view_inventory %}
+                <a href="{% url 'inventory' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'inventory' %}active{% endif %}">
+                    <span class="nav-title">Inventory</span>
+                    <span class="nav-description">Current<br>Historical</span>
+                </a>
+                {% endif %}
+                {% if can_view_reports %}
+                <a href="{% url 'reports' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+                    <span class="nav-title">Reports</span>
+                    <span class="nav-description">All courses<br>Upload status</span>
+                </a>
+                {% endif %}
+
+                {% if admin_access %}
+                <a href="/admin/" class="nav-link {% if request.resolver_match.namespace == 'admin' %}active{% endif %}">
+                    <span class="nav-title">Admin</span>
+                    <span class="nav-description">Only</span>
+                </a>
+                {% endif %}
+            </nav>
+        </header>
+
+        <section class="workspace">
+            <main class="workspace-content">
+                {% block content %}{% endblock %}
+            </main>
+        </section>
+    </div>
+{% else %}
+    <header class="public-header">
+        <img
+            src="{% static 'images/iqarus-logo-approved.png' %}"
+            alt="IQARUS — The Power of Health"
+        >
+    </header>
+    <main class="public-content">
+        {% block public_content %}
+            {% block content_logged_out %}{% endblock %}
+        {% endblock %}
+</main>
+{% endif %}
+{% if messages %}
+    <div class="app-toast-source" hidden aria-hidden="true">
+        {% for message in messages %}
+            <span data-toast-message data-toast-level="{{ message.tags|default:'info' }}">{{ message }}</span>
+        {% endfor %}
+    </div>
+{% endif %}
+<script>
+document.addEventListener("input", function (event) {
+    if (event.target.matches('input[type="email"]')) {
+        event.target.value = event.target.value.toLowerCase();
+    }
+});
+document.addEventListener("change", function (event) {
+    if (event.target.matches('input[type="email"]')) {
+        event.target.value = event.target.value.trim().toLowerCase();
+    }
+});
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

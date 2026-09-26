@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Students | IQARUS TMS{% endblock %}
+{% block page_heading %}Students{% endblock %}
+{% block content %}
+<section class="directory-page student-directory-page">
+  <header class="page-intro"><div><h2>Master Student Directory</h2><p>Search students, review course history and prepare a browser print sheet.</p></div><span class="result-total">Matches found: <strong>{{ total_matches }}</strong></span></header>
+  <form class="compact-directory-filters student-main-filters" method="get" id="student-filters">
+    <label class="wide-filter" for="student-search">Search<input id="student-search" name="q" value="{{ query }}" placeholder="English / Arabic name, Emirates ID or email" type="search"></label>
+    <label for="identity-status">Data quality<select id="identity-status" name="identity_status"><option value="">All</option>{% for value,label in identity_choices %}<option value="{{ value }}" {% if identity_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <label for="student-outcome">Status<select id="student-outcome" name="outcome"><option value="">All statuses</option>{% for value,label in outcome_choices %}<option value="{{ value }}" {% if current.outcome == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <label for="sort-filter">Sort<select id="sort-filter" name="sort"><option value="name" {% if sort == 'name' %}selected{% endif %}>Name A–Z</option><option value="name_desc" {% if sort == 'name_desc' %}selected{% endif %}>Name Z–A</option><option value="eid" {% if sort == 'eid' %}selected{% endif %}>Emirates ID</option><option value="newest" {% if sort == 'newest' %}selected{% endif %}>Latest</option></select></label>
+    <label for="page-size">View<select id="page-size" name="page_size"><option value="25" {% if page_size == '25' %}selected{% endif %}>25</option><option value="50" {% if page_size == '50' %}selected{% endif %}>50</option><option value="100" {% if page_size == '100' %}selected{% endif %}>100</option><option value="all" {% if page_size == 'all' %}selected{% endif %}>All</option></select></label>
+    <div class="filter-actions"><button class="button-primary" type="submit">Apply filters</button><a class="button-secondary" href="{% url 'students' %}">Clear</a></div>
+  </form>
+  <details class="additional-filters"><summary>Course filters and duplicate review</summary><div class="compact-directory-filters">    <label for="student-course">Course<select form="student-filters" id="student-course" name="course"><option value="">All courses</option>{% for course in courses %}<option value="{{ course.pk }}" {% if current.course == course.pk|stringformat:"s" %}selected{% endif %}>{{ course }}</option>{% endfor %}</select></label>
+    <label for="student-from">From<input form="student-filters" id="student-from" type="date" name="date_from" value="{{ current.date_from }}"></label>
+    <label for="student-to">To<input form="student-filters" id="student-to" type="date" name="date_to" value="{{ current.date_to }}"></label>
+    <label for="active-filter">Record active<select form="student-filters" id="active-filter" name="active"><option value="">All</option><option value="yes" {% if active_filter == 'yes' %}selected{% endif %}>Active</option><option value="no" {% if active_filter == 'no' %}selected{% endif %}>Inactive</option></select></label>
+<label>Duplicates<select form="student-filters" name="duplicates"><option value="">All records</option><option value="yes" {% if current.duplicates == 'yes' %}selected{% endif %}>Flagged duplicates</option></select></label><button class="button-primary" type="submit" form="student-filters">Apply filters</button>{% if data_quality_access %}<a class="button-secondary" href="{% url 'data_quality' %}">Review identities and source errors</a>{% endif %}</div></details>
+  <form method="post" action="{% url 'students_print' %}" target="_blank" id="student-selection-form">
+    {% csrf_token %}<input type="hidden" name="filters" value="{{ query_string }}">
+    <div class="selection-toolbar"><div><button type="button" class="toolbar-button" id="select-all-shown">Select this page</button><button type="button" class="toolbar-button" id="clear-selection">Clear selection</button><span id="selected-count">0 selected</span></div><div><button class="toolbar-button" type="submit" name="mode" value="selected" id="print-selected" disabled>Print selected</button><button class="primary-action" type="submit" name="mode" value="all_filtered">Print all matching students</button></div></div>
+    <div class="directory-table-shell"><table class="compact-directory-table student-participation-table">
+      <thead><tr><th><input type="checkbox" id="master-checkbox" aria-label="Select this page"></th><th>Name in English</th><th lang="ar">Name in Arabic / اسم الطالب</th><th>Emirates ID</th><th>Email</th><th>Data quality</th><th>Status</th></tr></thead>
+      <tbody>{% for row in page_obj %}<tr title="{{ row.course_name }}{% if row.date %} · {{ row.date|date:'d/m/Y' }}{% endif %}">
+        <td><input class="row-checkbox" type="checkbox" name="row_keys" value="{{ row.row_key }}" aria-label="Select {{ row.name_english }} {{ row.course_name }}"></td>
+        <td class="directory-name"><a class="student-name" href="{% url 'student_detail' row.student.public_id %}">{{ row.name_english|default:'—' }}</a></td>
+        <td class="directory-name arabic-directory-name" lang="ar" dir="rtl">{{ row.name_arabic|default:'—' }}</td>
+        <td class="eid-cell">{{ row.formatted_eid|default:'—' }}</td><td>{{ row.email|default:'—' }}</td>
+        <td>{% if row.duplicate_review or row.duplicate %}<details class="student-review-details"><summary class="directory-badge quality-{{ row.quality }}">{{ row.quality_label }} · review</summary><div>{% if row.duplicate_review %}<strong>{{ row.duplicate_review.review_label }}</strong>{% for flag in row.duplicate_review.flags %}<p>{{ flag.title }}: {{ flag.detail }}</p>{% endfor %}{% else %}<p>Duplicate training record flagged for review.</p>{% endif %}<a href="{% url 'student_detail' row.student.public_id %}">View student history</a>{% if row.can_open_course %}<a href="{% url 'instructor_course_workspace' row.session.public_id %}">Open course review</a>{% endif %}</div></details>{% else %}<span class="directory-badge quality-{{ row.quality }}">{{ row.quality_label }}</span>{% endif %}</td><td><span class="directory-badge outcome-{{ row.outcome }}">{{ row.outcome_label }}</span></td>
+      </tr>{% empty %}<tr><td colspan="7" class="empty-table">No students match these filters.</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <p class="directory-hint">Click a name to see course dates, attendance, HP, TTT and full history. Print sheets include each matching student once.</p>
+  </form>
+  {% if page_obj.paginator.num_pages > 1 %}<nav class="pagination" aria-label="Student pages"><span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ total_matches }}</span><div>{% if page_obj.has_previous %}<a href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}<strong>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</strong>{% if page_obj.has_next %}<a href="?{{ query_string }}&page={{ page_obj.next_page_number }}">Next</a>{% endif %}</div></nav>{% endif %}
+</section>
+<script defer src="{% static 'portal/js/student_selection.js' %}"></script>
+{% endblock %}

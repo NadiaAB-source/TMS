@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IQARUS Student Directory Print</title>
+  <style>
+    :root { --orange:#f47721; --ink:#22262a; --blue:#dcecf7; --line:#8b9298; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:24px; color:var(--ink); background:#eef1f3; font-family:Arial,sans-serif; }
+    .print-toolbar { max-width:1180px; margin:0 auto 14px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .print-toolbar p { margin:0; color:#5f6871; }
+    .print-button { padding:10px 16px; color:#fff; background:var(--orange); border:0; border-radius:8px; font-weight:700; cursor:pointer; }
+    .sheet { width:min(1180px,100%); margin:auto; padding:24px; background:#fff; box-shadow:0 12px 32px rgba(25,32,38,.12); }
+    .sheet-header { display:grid; grid-template-columns:190px 1fr 260px; align-items:center; gap:18px; padding-bottom:16px; border-bottom:3px solid var(--orange); }
+    .sheet-header img { width:170px; height:auto; object-fit:contain; }
+    .sheet-title { text-align:center; }
+    .sheet-title h1 { margin:0; font-size:24px; letter-spacing:.02em; }
+    .sheet-title p { margin:6px 0 0; color:#5f6871; font-size:13px; }
+    .sheet-meta { text-align:right; font-size:12px; line-height:1.65; }
+    .sheet-meta strong { display:inline-block; min-width:78px; }
+    table { width:100%; margin-top:18px; border-collapse:collapse; table-layout:fixed; font-size:11px; }
+    th,td { border:1px solid var(--line); padding:7px 6px; vertical-align:middle; overflow-wrap:anywhere; }
+    th { background:var(--blue); text-align:center; font-size:10px; line-height:1.25; }
+    th:nth-child(1),td:nth-child(1){width:4%;text-align:center}
+    th:nth-child(2),td:nth-child(2){width:17%}
+    th:nth-child(3),td:nth-child(3){width:16%;text-align:center}
+    th:nth-child(4),td:nth-child(4){width:18%}
+    th:nth-child(5),td:nth-child(5){width:19%}
+    th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7){width:8%;text-align:center}
+    th:nth-child(8),td:nth-child(8){width:10%}
+    tbody tr { height:34px; break-inside:avoid; }
+    .arabic { direction:rtl; text-align:right; font-size:12px; }
+    .student-name { font-weight:700; }
+    .empty { padding:28px; text-align:center; }
+    .sheet-footer { margin-top:12px; display:flex; justify-content:space-between; color:#606870; font-size:10px; }
+    @page { size:landscape; margin:10mm; }
+    @media print {
+      body { padding:0; background:#fff; }
+      .print-toolbar { display:none; }
+      .sheet { width:100%; padding:0; box-shadow:none; }
+      .sheet-header img { width:145px; }
+      thead { display:table-header-group; }
+    }
+    @media(max-width:760px){
+      body{padding:12px}.sheet{padding:14px;overflow:auto}.sheet-header{grid-template-columns:1fr}.sheet-header img{width:145px}.sheet-title,.sheet-meta{text-align:left}table{min-width:980px}
+    }
+  </style>
+</head>
+<body>
+  <div class="print-toolbar">
+    <p>This is an online Day 1-style sheet. Use your browser print preview when ready.</p>
+    <button class="print-button" type="button" onclick="window.print()">Print List</button>
+  </div>
+
+  <main class="sheet">
+    <header class="sheet-header">
+      <img src="{% static 'images/iqarus-logo.png' %}" alt="IQARUS">
+      <div class="sheet-title">
+        <h1>Student Directory List</h1>
+        <p>{{ students|length }} selected student{{ students|length|pluralize }}</p>
+      </div>
+      <div class="sheet-meta">
+        <div><strong>Prepared:</strong> {{ prepared_at|date:"d M Y H:i" }}</div>
+        <div><strong>Prepared by:</strong> {{ prepared_by }}</div>
+      </div>
+    </header>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Email</th>
+          <th>EID / رقم الهوية</th>
+          <th>اسم الطالب</th>
+          <th>Student Name</th>
+          <th>Day 1</th>
+          <th>Day 2</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for student in students %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ student.email|default:"" }}</td>
+          <td>{{ student.formatted_eid }}</td>
+          <td class="arabic">{{ student.name_arabic }}</td>
+          <td class="student-name">{{ student.name_english|upper }}</td>
+          <td></td><td></td><td></td>
+        </tr>
+      {% empty %}
+        <tr><td class="empty" colspan="8">No students were selected.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <footer class="sheet-footer">
+      <span>Online print view — no spreadsheet download required</span>
+      <span>Day 1 / Day 2 / Status fields are intentionally blank for handwriting</span>
+    </footer>
+  </main>
+</body>
+</html>
